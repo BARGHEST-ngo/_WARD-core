@@ -66,23 +66,37 @@ Verify ADB
 
 ### Binary Usage
 ```bash
-# Extract the ZIP and run the executable
-./ward-core --version
-./ward-core --config config.yaml --device DEVICE_SERIAL --output OUTPUT_DIR
-./ward-core --config config.yaml --logs LOG_DIR --output OUTPUT_DIR
+# Extract the ZIP and run the executable with a device connected to ADB
+./ward-core.exe
 
-### Python Package Usage
-pip install ward-core
-ward-core --version
-python -m ward_core --version
-
-#### CLI reference
+You have the following options for further customization
 --version: Print engine version
 --config <path>: Specify configuration file (optional, uses bundled default)
 --device <serial>: Live collection from specific ADB device
 --logs <dir>: Analyze existing log directory
 --output <dir>: Output directory for results
 --profile <name>: Collection profile (standard, etc.)
+
+#### Forensics artifacts output
+
+Once the analysis is complete, a complete forensics snapshot will be contained in releases root folder:
+
+./_internal/ward_core/collections
+Default (no --output): ./collections\YYYY\MM\<timestamp_model_serial>\ relative to the current working directory
+- Or with --output OUTPUT_DIR: OUTPUT_DIR\YYYY\MM\<timestamp_model_serial>\
+
+In this directory, you will see each scan folder contains 
+
+Risk_assessment.json 
+Which contains a full break down of the devices current security state based on the heurstics ran.
+Example below indicating a behavioural detection for [NoviSpy](https://www.amnesty.org/en/wp-content/uploads/2024/12/EUR7088132024ENGLISH.pdf):
+
+<img width="1282" height="1102" alt="image" src="https://github.com/user-attachments/assets/08966f7f-9001-405d-97f2-017c843838eb" />
+
+### Python Package Usage
+pip install ward-core
+ward-core --version
+python -m ward_core --version
 
 #### JSON Output Schema
 
@@ -96,10 +110,7 @@ python -m ward_core --version
   "risk_level": "low"
 }
 
-#### Forensics artifacts output
 
-Default (no --output): ./collections\YYYY\MM\<timestamp_model_serial>\ relative to the current working directory
-With --output OUTPUT_DIR: OUTPUT_DIR\YYYY\MM\<timestamp_model_serial>\
 
 **Full Changelog**: https://github.com/BARGHEST-ngo/_WARD-core/commits/v2.0.0-beta.1
 
