@@ -45,23 +45,23 @@ Install “Android SDK Platform‑Tools” and ensure adb is on your PATH.
 ## Install instructions
 
 Windows
--Download: https://developer.android.com/tools/releases/platform-tools
--Extract to C:\Android\platform-tools (or any folder)
--Add that folder to PATH (System Properties → Environment Variables → Path → New)
--Optional: install your device’s OEM USB driver if the device doesn’t appear
+- Download: https://developer.android.com/tools/releases/platform-tools
+- Extract to C:\Android\platform-tools (or any folder)
+- Add that folder to PATH (System Properties → Environment Variables → Path → New)
+- Optional: install your device’s OEM USB driver if the device doesn’t appear
 
 macOS
--Homebrew: brew install android-platform-tools
--Or download from Google (link above) and add platform-tools to PATH
+- Homebrew: brew install android-platform-tools
+- Or download from Google (link above) and add platform-tools to PATH
 
 Linux (Debian/Ubuntu)
--sudo apt-get install android-tools-adb
--Or download from Google (link above) and add platform-tools to PATH
+- sudo apt-get install android-tools-adb
+- Or download from Google (link above) and add platform-tools to PATH
 
 Verify ADB
 
--adb version → shows the installed version
--adb devices → should list your phone as device (authorize the USB debugging prompt on the device)
+- adb version → shows the installed version
+- adb devices → should list your phone as device (authorize the USB debugging prompt on the device)
 
 ## Binary Usage
 
