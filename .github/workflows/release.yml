@@ -25,7 +25,10 @@ jobs:
             Write-Host "✗ Config file not found"
             exit 1
           }
-      - run: pyinstaller --noconfirm --clean --distpath build/dist --workpath build/work ward-core.spec
+      - run: |
+          $addDataArg = "ward_core\config.yaml;."
+          pyinstaller --noconfirm --clean --name ward-core --distpath build/dist --workpath build/work --add-data "$addDataArg" main.py
+        shell: pwsh
       # Verify config.yaml is bundled
       - run: powershell "Get-ChildItem -Path build/dist/ward-core | Select-Object Name"
       - run: powershell -Command "if (!(Test-Path 'build/dist/ward-core/config.yaml')) { Write-Error 'config.yaml not found'; exit 1 }"
@@ -56,7 +59,9 @@ jobs:
             echo "✗ Config file not found"
             exit 1
           fi
-      - run: pyinstaller --noconfirm --clean --distpath build/dist --workpath build/work ward-core.spec
+      - run: |
+          addDataArg="ward_core/config.yaml:."
+          pyinstaller --noconfirm --clean --name ward-core --distpath build/dist --workpath build/work --add-data "$addDataArg" main.py
       - run: ls -la build/dist/ward-core
       - run: test -f build/dist/ward-core/config.yaml
       - run: (cd build/dist && zip -r ../../ward-core-${{ github.ref_name }}-linux-x64.zip ward-core)
@@ -83,7 +88,9 @@ jobs:
             echo "✗ Config file not found"
             exit 1
           fi
-      - run: pyinstaller --noconfirm --clean --distpath build/dist --workpath build/work ward-core.spec
+      - run: |
+          addDataArg="ward_core/config.yaml:."
+          pyinstaller --noconfirm --clean --name ward-core --distpath build/dist --workpath build/work --add-data "$addDataArg" main.py
       - run: ls -la build/dist/ward-core
       - run: test -f build/dist/ward-core/config.yaml
       - run: (cd build/dist && zip -r ../../ward-core-${{ github.ref_name }}-macos-x64.zip ward-core)
@@ -110,7 +117,9 @@ jobs:
             echo "✗ Config file not found"
             exit 1
           fi
-      - run: pyinstaller --noconfirm --clean --distpath build/dist --workpath build/work ward-core.spec
+      - run: |
+          addDataArg="ward_core/config.yaml:."
+          pyinstaller --noconfirm --clean --name ward-core --distpath build/dist --workpath build/work --add-data "$addDataArg" main.py
       - run: ls -la build/dist/ward-core
       - run: test -f build/dist/ward-core/config.yaml
       - run: (cd build/dist && zip -r ../../ward-core-${{ github.ref_name }}-macos-arm64.zip ward-core)

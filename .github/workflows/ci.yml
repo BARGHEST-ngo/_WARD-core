@@ -17,6 +17,8 @@ jobs:
         run: |
           python -m ward_core --version
           python main.py --version
+      - name: Check PyInstaller version
+        run: pyinstaller --version
 
 
       - name: Verify config file exists (Windows)
@@ -44,19 +46,43 @@ jobs:
             ls -la ward_core/
           fi
 
+
+
       - name: Build with PyInstaller (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          Write-Host "Building with PyInstaller using spec file..."
-          pyinstaller --noconfirm --clean --distpath build/dist --workpath build/work ward-core.spec
+          Write-Host "Building with PyInstaller using command line..."
+          Write-Host "Current directory: $(Get-Location)"
+          Write-Host "Config file exists: $(Test-Path 'ward_core\config.yaml')"
+          $configPath = (Resolve-Path 'ward_core\config.yaml').Path
+          Write-Host "Config file path: $configPath"
+
+          # Try using relative path instead of absolute path
+          $relativeConfigPath = "ward_core\config.yaml"
+          $addDataArg = "$relativeConfigPath;."
+          Write-Host "Add-data argument (relative): $addDataArg"
+          Write-Host "Running: pyinstaller --noconfirm --clean --name ward-core --distpath build/dist --workpath build/work --add-data `"$addDataArg`" main.py"
+
+          # Run PyInstaller with verbose output
+          pyinstaller --noconfirm --clean --name ward-core --distpath build/dist --workpath build/work --add-data "$addDataArg" --log-level DEBUG main.py
           Write-Host "PyInstaller build completed"
 
       - name: Build with PyInstaller (Linux/macOS)
         if: runner.os != 'Windows'
         run: |
-          echo "Building with PyInstaller using spec file..."
-          pyinstaller --noconfirm --clean --distpath build/dist --workpath build/work ward-core.spec
+          echo "Building with PyInstaller using command line..."
+          echo "Current directory: $(pwd)"
+          echo "Config file exists: $(test -f ward_core/config.yaml && echo 'yes' || echo 'no')"
+
+          # Try using relative path instead of absolute path
+          relativeConfigPath="ward_core/config.yaml"
+          addDataArg="$relativeConfigPath:."
+          echo "Add-data argument (relative): $addDataArg"
+          echo "Running: pyinstaller --noconfirm --clean --name ward-core --distpath build/dist --workpath build/work --add-data \"$addDataArg\" main.py"
+
+          # Run PyInstaller with verbose output
+          pyinstaller --noconfirm --clean --name ward-core --distpath build/dist --workpath build/work --add-data "$addDataArg" --log-level DEBUG main.py
           echo "PyInstaller build completed"
 
       - name: Debug - List build contents (Windows)
@@ -65,8 +91,16 @@ jobs:
         run: |
           Write-Host "=== BUILD DIRECTORY STRUCTURE ==="
           if (Test-Path "build") {
-            Write-Host "Contents of build/:"
-            Get-ChildItem -Recurse build | Format-Table Name, FullName, Length -AutoSize
+            Write-Host "Contents of build/dist/ward-core/:"
+            if (Test-Path "build/dist/ward-core") {
+              Get-ChildItem build/dist/ward-core | Format-Table Name, Length -AutoSize
+            } else {
+              Write-Host "build/dist/ward-core/ directory does not exist"
+              Write-Host "Contents of build/dist/:"
+              if (Test-Path "build/dist") {
+                Get-ChildItem build/dist | Format-Table Name -AutoSize
+              }
+            }
           } else {
             Write-Host "build/ directory does not exist"
           }
@@ -79,8 +113,11 @@ jobs:
             Write-Host "✗ config.yaml not found in expected location"
             Write-Host "Searching for any .yaml files in build directory:"
             if (Test-Path "build") {
-              Get-ChildItem -Recurse build -Filter "*.yaml" | Format-Table FullName -AutoSize
-              Get-ChildItem -Recurse build -Filter "*.yml" | Format-Table FullName -AutoSize
+              $yamlFiles = Get-ChildItem -Recurse build -Filter "*.yaml" -ErrorAction SilentlyContinue
+              $ymlFiles = Get-ChildItem -Recurse build -Filter "*.yml" -ErrorAction SilentlyContinue
+              if ($yamlFiles) { $yamlFiles | Format-Table FullName -AutoSize }
+              if ($ymlFiles) { $ymlFiles | Format-Table FullName -AutoSize }
+              if (-not $yamlFiles -and -not $ymlFiles) { Write-Host "No .yaml or .yml files found" }
             }
           }
 
