@@ -1,0 +1,37 @@
+# Python bytecode/cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Tool caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pytype/
+.pyre/
+
+# Coverage
+.coverage
+htmlcov/
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Build artifacts (Python packaging, PyInstaller)
+build/
+dist/
+*.egg-info/
+*.egg
+# If you commit a PyInstaller spec file, do NOT ignore it.
+# *.spec  # <-- comment this out if you will keep a spec in the repo
+
+# IDEs/editors
+.vscode/
+.idea/
