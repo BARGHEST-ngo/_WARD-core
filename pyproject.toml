@@ -11,7 +11,9 @@ license = { text = "GPL-3.0-only" }
 authors = [{ name = "BARGHEST" }]
 
 # Add dependencies as you confirm them; start minimal to avoid CI breakage
-dependencies = []
+dependencies = [
+    "pyyaml>=6.0"
+]
 
 [project.scripts]
 ward-core = "ward_core.cli:main"

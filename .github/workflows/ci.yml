@@ -17,42 +17,95 @@ jobs:
         run: |
           python -m ward_core --version
           python main.py --version
-      - name: Set ADD_DATA (Windows)
+
+
+      - name: Verify config file exists (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          $p = Resolve-Path 'ward_core\config.yaml'
-          echo "ADD_DATA=$p;." | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "Checking if config file exists..."
+          if (Test-Path "ward_core\config.yaml") {
+            Write-Host "✓ ward_core\config.yaml exists"
+            Get-Item "ward_core\config.yaml" | Format-List FullName, Length
+          } else {
+            Write-Host "✗ ward_core\config.yaml not found"
+            Get-ChildItem ward_core\ | Format-Table Name
+          }
 
-      - name: Set ADD_DATA (Linux/macOS)
+      - name: Verify config file exists (Linux/macOS)
         if: runner.os != 'Windows'
         run: |
-          p="$(pwd)/ward_core/config.yaml"
-          echo "ADD_DATA=$p:." >> $GITHUB_ENV
+          echo "Checking if config file exists..."
+          if [ -f "ward_core/config.yaml" ]; then
+            echo "✓ ward_core/config.yaml exists"
+            ls -la ward_core/config.yaml
+          else
+            echo "✗ ward_core/config.yaml not found"
+            ls -la ward_core/
+          fi
 
       - name: Build with PyInstaller (Windows)
         if: runner.os == 'Windows'
-        run: pyinstaller --noconfirm --clean --name ward-core --dist build/dist --work build/work --add-data "$env:ADD_DATA" main.py
+        shell: pwsh
+        run: |
+          Write-Host "Building with PyInstaller using spec file..."
+          pyinstaller --noconfirm --clean --distpath build/dist --workpath build/work ward-core.spec
+          Write-Host "PyInstaller build completed"
 
       - name: Build with PyInstaller (Linux/macOS)
         if: runner.os != 'Windows'
-        run: pyinstaller --noconfirm --clean --name ward-core --dist build/dist --work build/work --add-data "$ADD_DATA" main.py
+        run: |
+          echo "Building with PyInstaller using spec file..."
+          pyinstaller --noconfirm --clean --distpath build/dist --workpath build/work ward-core.spec
+          echo "PyInstaller build completed"
 
       - name: Debug - List build contents (Windows)
         if: runner.os == 'Windows'
+        shell: pwsh
         run: |
-          echo "Contents of build/dist/ward-core/:"
-          Get-ChildItem -Recurse build/dist/ward-core | Format-List -Property FullName, Length
-          Write-Host "Looking for config files:"
-          if (Test-Path "build/dist/ward-core/config.yaml") { Write-Host "Found config.yaml" } else { Write-Host "config.yaml not found" }
+          Write-Host "=== BUILD DIRECTORY STRUCTURE ==="
+          if (Test-Path "build") {
+            Write-Host "Contents of build/:"
+            Get-ChildItem -Recurse build | Format-Table Name, FullName, Length -AutoSize
+          } else {
+            Write-Host "build/ directory does not exist"
+          }
+
+          Write-Host "`n=== LOOKING FOR CONFIG FILES ==="
+          if (Test-Path "build/dist/ward-core/config.yaml") {
+            Write-Host "✓ Found config.yaml in expected location"
+            Get-Item "build/dist/ward-core/config.yaml" | Format-List FullName, Length
+          } else {
+            Write-Host "✗ config.yaml not found in expected location"
+            Write-Host "Searching for any .yaml files in build directory:"
+            if (Test-Path "build") {
+              Get-ChildItem -Recurse build -Filter "*.yaml" | Format-Table FullName -AutoSize
+              Get-ChildItem -Recurse build -Filter "*.yml" | Format-Table FullName -AutoSize
+            }
+          }
 
       - name: Debug - List build contents (Linux/macOS)
         if: runner.os != 'Windows'
         run: |
-          echo "Contents of build/dist/ward-core/:"
-          ls -la build/dist/ward-core/ || echo "Directory doesn't exist"
-          echo "Looking for config files:"
-          find build/dist/ward-core/ -name "*.yaml" -o -name "*.yml" || echo "No yaml files found"
+          echo "=== BUILD DIRECTORY STRUCTURE ==="
+          if [ -d "build" ]; then
+            echo "Contents of build/:"
+            find build -type f | head -20
+            echo "..."
+          else
+            echo "build/ directory does not exist"
+          fi
+
+          echo ""
+          echo "=== LOOKING FOR CONFIG FILES ==="
+          if [ -f "build/dist/ward-core/config.yaml" ]; then
+            echo "✓ Found config.yaml in expected location"
+            ls -la build/dist/ward-core/config.yaml
+          else
+            echo "✗ config.yaml not found in expected location"
+            echo "Searching for any .yaml files in build directory:"
+            find build -name "*.yaml" -o -name "*.yml" 2>/dev/null || echo "No yaml files found"
+          fi
 
       - name: Test PyInstaller build (Windows)
         if: runner.os == 'Windows'
