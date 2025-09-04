@@ -184,18 +184,24 @@ jobs:
         shell: pwsh
         run: |
           Write-Host "=== FINAL BUILD TEST (Windows) ==="
-          if (Test-Path "build/dist/ward-core/config.yaml") {
-            Write-Host "✓ Config file found - test passed"
-            Get-Item "build/dist/ward-core/config.yaml" | Format-List FullName, Length
+          # PyInstaller puts data files in _internal directory
+          $configPath = "build/dist/ward-core/_internal/config.yaml"
+          if (Test-Path $configPath) {
+            Write-Host "✓ Config file found in _internal directory - test passed"
+            Get-Item $configPath | Format-List FullName, Length
           } else {
-            Write-Host "✗ Config file not found - investigating..."
-            Write-Host "Build directory structure:"
-            if (Test-Path "build") {
-              Get-ChildItem -Recurse build | Format-Table Name, FullName -AutoSize
+            Write-Host "✗ Config file not found in _internal directory"
+            Write-Host "Checking for config.yaml in root directory..."
+            if (Test-Path "build/dist/ward-core/config.yaml") {
+              Write-Host "Found in root directory (unexpected location)"
             } else {
-              Write-Host "No build directory found!"
+              Write-Host "Not found in root directory either"
             }
-            Write-Error "config.yaml not found in build output"
+            Write-Host "Build directory structure:"
+            if (Test-Path "build/dist/ward-core") {
+              Get-ChildItem -Recurse "build/dist/ward-core" | Where-Object Name -like "*.yaml" | Format-Table FullName -AutoSize
+            }
+            Write-Error "config.yaml not found in expected location"
             exit 1
           }
 
@@ -205,46 +211,24 @@ jobs:
           echo "=== FINAL BUILD TEST (Linux/macOS) ==="
           echo "Operating System: $RUNNER_OS"
 
-          if [ -f "build/dist/ward-core/config.yaml" ]; then
-            echo "✓ Config file found - test passed"
-            ls -la build/dist/ward-core/config.yaml
+          # PyInstaller puts data files in _internal directory
+          configPath="build/dist/ward-core/_internal/config.yaml"
+          if [ -f "$configPath" ]; then
+            echo "✓ Config file found in _internal directory - test passed"
+            ls -la "$configPath"
           else
-            echo "✗ Config file not found - investigating..."
-            echo "Build directory structure:"
-            if [ -d "build" ]; then
-              find build -type f | head -20
+            echo "✗ Config file not found in _internal directory"
+            echo "Checking for config.yaml in root directory..."
+            if [ -f "build/dist/ward-core/config.yaml" ]; then
+              echo "Found in root directory (unexpected location)"
+              ls -la "build/dist/ward-core/config.yaml"
             else
-              echo "No build directory found!"
+              echo "Not found in root directory either"
             fi
-
-            # Try alternative approach for macOS
-            if [ "$RUNNER_OS" = "macOS" ]; then
-              echo ""
-              echo "=== TRYING ALTERNATIVE APPROACH FOR macOS ==="
-              echo "Attempting PyInstaller with absolute path..."
-
-              # Clean previous build
-              rm -rf build/dist/ward-core build/work
-
-              # Try with absolute path
-              absoluteConfigPath="$(pwd)/ward_core/config.yaml"
-              echo "Using absolute path: $absoluteConfigPath"
-              pyinstaller --noconfirm --clean --name ward-core --distpath build/dist --workpath build/work --add-data "$absoluteConfigPath:." main.py
-
-              echo "Alternative build completed, checking result:"
-              if [ -f "build/dist/ward-core/config.yaml" ]; then
-                echo "✓ Alternative approach succeeded!"
-                ls -la build/dist/ward-core/config.yaml
-              else
-                echo "✗ Alternative approach also failed"
-                echo "Final directory contents:"
-                ls -la build/dist/ward-core/ || echo "Directory does not exist"
-                exit 1
-              fi
-            else
-              echo "Test failed - config.yaml not found in build output"
-              exit 1
-            fi
+            echo "Searching for any YAML files in build:"
+            find build/dist/ward-core -name "*.yaml" -o -name "*.yml" 2>/dev/null || echo "No YAML files found"
+            echo "Test failed - config.yaml not found in expected location"
+            exit 1
           fi
 
       - name: Test PyInstaller executable (Windows)
