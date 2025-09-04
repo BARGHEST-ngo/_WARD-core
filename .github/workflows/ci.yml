@@ -14,4 +14,6 @@ jobs:
           python-version: ${{ matrix.python }}
       - run: pip install -e .
       - name: Smoke: version prints
-        run: python main.py --version
+        run: |
+          python -m ward_core --version
+          python main.py --version
