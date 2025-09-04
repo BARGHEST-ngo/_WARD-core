@@ -65,7 +65,7 @@ Verify ADB
 
 ## Binary Usage
 
-# Extract the ZIP and run the executable with a device connected to ADB
+### Extract the ZIP and run the executable with a device connected to ADB
 ./ward-core.exe
 
 You have the following options for further customization
