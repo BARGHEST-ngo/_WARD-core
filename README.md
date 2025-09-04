@@ -1,6 +1,6 @@
-# WARD Core v2.0.0-beta.1.2 - standalone engine
+# WARD core v2.0.0-beta.1.2 - standalone engine
 
-This is the first standalone release of the WARD Core engine, this is the backend engine of the main WARD project. The main project is here: https://github.com/BARGHEST-ngo/_WARD-UI
+This is the first standalone release of the WARD core engine, this is the backend engine of the main WARD project. The main project is here: https://github.com/BARGHEST-ngo/_WARD-UI
 
 WARD is a modular, open-source and decentralised tool for behavioral mobile forensics and acquisition using Android ADB–accessible data. It's developed by [BARGHEST](https://barghest.asia), a non-profit organization aiming to support the democratization of threat intelligence in the majority world.
 It grabs and analyses a wide range of live-state system artifacts — crash logs, process and thread listings, diagnostic outputs, Wi-Fi manager logs, installed apps — to preserve forensic evidence and surface patterns that might indicate spyware or other unwanted activity.
