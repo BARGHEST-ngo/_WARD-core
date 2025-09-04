@@ -65,7 +65,7 @@ Verify ADB
 -adb devices → should list your phone as device (authorize the USB debugging prompt on the device)
 
 ### Binary Usage
-```bash
+
 # Extract the ZIP and run the executable with a device connected to ADB
 ./ward-core.exe
 
@@ -111,7 +111,6 @@ python -m ward_core --version
 }
 
 
-
 **Full Changelog**: https://github.com/BARGHEST-ngo/_WARD-core/commits/v2.0.0-beta.1
 
 ## Important notes
@@ -119,5 +118,5 @@ python -m ward_core --version
 -Unsigned Binaries: macOS users may see Gatekeeper warnings - this is expected for unsigned binaries
 -Python 3.11+: Source installation requires Python 3.11 or later
 -Backward Compatibility: All existing WARD workflows and integrations should continue working
--ADB install is required
+-ADB install is *required*
 -First-run on macOS may require right-click → Open to bypass Gatekeeper
