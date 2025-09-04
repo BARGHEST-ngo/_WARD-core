@@ -42,8 +42,7 @@ Each download includes SHA256 checksums for verification.
 Required for live device collection. Not needed when analyzing existing logs.
 Install “Android SDK Platform‑Tools” and ensure adb is on your PATH.
 
-
-Install instructions
+## Install instructions
 
 Windows
 -Download: https://developer.android.com/tools/releases/platform-tools
@@ -64,7 +63,7 @@ Verify ADB
 -adb version → shows the installed version
 -adb devices → should list your phone as device (authorize the USB debugging prompt on the device)
 
-### Binary Usage
+## Binary Usage
 
 # Extract the ZIP and run the executable with a device connected to ADB
 ./ward-core.exe
