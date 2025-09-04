@@ -16,7 +16,12 @@ jobs:
           python-version: "3.11"
       - run: pip install . pyinstaller
       # Build ONCE with add-data (Windows uses backslash+semicolon)
-      - run: pyinstaller --noconfirm --clean --name ward-core --dist build/dist --work build/work --add-data "ward_core\\config.yaml;." main.py
+      - name: Set ADD_DATA (Windows)
+        shell: pwsh
+        run: |
+          $p = Resolve-Path 'ward_core\config.yaml'
+          echo "ADD_DATA=$p;." | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - run: pyinstaller --noconfirm --clean --name ward-core --dist build/dist --work build/work --add-data "$env:ADD_DATA" main.py
       # Verify config.yaml is bundled
       - run: powershell "Get-ChildItem -Path build/dist/ward-core | Select-Object Name"
       - run: powershell -Command "if (!(Test-Path 'build/dist/ward-core/config.yaml')) { Write-Error 'config.yaml not found'; exit 1 }"
@@ -39,7 +44,11 @@ jobs:
           python-version: "3.11"
       - run: pip install . pyinstaller
       # Linux/mac use forward slash+colon
-      - run: pyinstaller --noconfirm --clean --name ward-core --dist build/dist --work build/work --add-data "ward_core/config.yaml:." main.py
+      - name: Set ADD_DATA
+        run: |
+          p="$(pwd)/ward_core/config.yaml"
+          echo "ADD_DATA=$p:." >> $GITHUB_ENV
+      - run: pyinstaller --noconfirm --clean --name ward-core --dist build/dist --work build/work --add-data "$ADD_DATA" main.py
       - run: ls -la build/dist/ward-core
       - run: test -f build/dist/ward-core/config.yaml
       - run: (cd build/dist && zip -r ../../ward-core-${{ github.ref_name }}-linux-x64.zip ward-core)
@@ -58,7 +67,11 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install . pyinstaller
-      - run: pyinstaller --noconfirm --clean --name ward-core --dist build/dist --work build/work --add-data "ward_core/config.yaml:." main.py
+      - name: Set ADD_DATA
+        run: |
+          p="$(pwd)/ward_core/config.yaml"
+          echo "ADD_DATA=$p:." >> $GITHUB_ENV
+      - run: pyinstaller --noconfirm --clean --name ward-core --dist build/dist --work build/work --add-data "$ADD_DATA" main.py
       - run: ls -la build/dist/ward-core
       - run: test -f build/dist/ward-core/config.yaml
       - run: (cd build/dist && zip -r ../../ward-core-${{ github.ref_name }}-macos-x64.zip ward-core)
@@ -77,7 +90,11 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install . pyinstaller
-      - run: pyinstaller --noconfirm --clean --name ward-core --dist build/dist --work build/work --add-data "ward_core/config.yaml:." main.py
+      - name: Set ADD_DATA
+        run: |
+          p="$(pwd)/ward_core/config.yaml"
+          echo "ADD_DATA=$p:." >> $GITHUB_ENV
+      - run: pyinstaller --noconfirm --clean --name ward-core --dist build/dist --work build/work --add-data "$ADD_DATA" main.py
       - run: ls -la build/dist/ward-core
       - run: test -f build/dist/ward-core/config.yaml
       - run: (cd build/dist && zip -r ../../ward-core-${{ github.ref_name }}-macos-arm64.zip ward-core)

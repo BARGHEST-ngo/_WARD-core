@@ -17,13 +17,26 @@ jobs:
         run: |
           python -m ward_core --version
           python main.py --version
+      - name: Set ADD_DATA (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $p = Resolve-Path 'ward_core\config.yaml'
+          echo "ADD_DATA=$p;." | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Set ADD_DATA (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: |
+          p="$(pwd)/ward_core/config.yaml"
+          echo "ADD_DATA=$p:." >> $GITHUB_ENV
+
       - name: Build with PyInstaller (Windows)
         if: runner.os == 'Windows'
-        run: pyinstaller --noconfirm --clean --name ward-core --dist build/dist --work build/work --add-data "ward_core/config.yaml;." main.py
+        run: pyinstaller --noconfirm --clean --name ward-core --dist build/dist --work build/work --add-data "$env:ADD_DATA" main.py
 
       - name: Build with PyInstaller (Linux/macOS)
         if: runner.os != 'Windows'
-        run: pyinstaller --noconfirm --clean --name ward-core --dist build/dist --work build/work --add-data "ward_core/config.yaml:." main.py
+        run: pyinstaller --noconfirm --clean --name ward-core --dist build/dist --work build/work --add-data "$ADD_DATA" main.py
 
       - name: Debug - List build contents (Windows)
         if: runner.os == 'Windows'
