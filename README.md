@@ -2,7 +2,7 @@
 
 This is the first standalone release of the WARD core engine, this is the backend engine of the main WARD project. The main project is here: https://github.com/BARGHEST-ngo/_WARD-UI
 
-WARD is a modular, open-source and decentralised tool for behavioral mobile forensics and acquisition using Android ADB–accessible data. It's developed by [BARGHEST](https://barghest.asia), a non-profit organization aiming to support the democratization of threat intelligence in the majority world.
+WARD is a modular, open-source and decentralised tool for behavioral mobile forensics analysis and artifact acquisition using Android ADB–accessible data. It's developed by [BARGHEST](https://barghest.asia), a non-profit organization aiming to support the democratization of threat intelligence in the majority world.
 It grabs and analyses a wide range of live-state system artifacts — crash logs, process and thread listings, diagnostic outputs, Wi-Fi manager logs, installed apps — to preserve forensic evidence and surface patterns that might indicate spyware or other unwanted activity.
 Instead of relying on vendor telemetry, malware signatures, or preloaded IOCs, WARD uses heuristics to spot anomalies like:
 
@@ -71,7 +71,7 @@ Verify ADB
 
 You have the following options for further customization
 --version: Print engine version
---config <path>: Specify configuration file (optional, uses bundled default)
+--config <path>: Specify configuration file (optional, uses bundled default) *we recommmend reviewing the [configuration file](https://github.com/BARGHEST-ngo/_WARD-core/blob/main/ward_core/config.yaml) to see what available options are there. If you wish to select options such as 'APK acquisition' you need to use a custom config* 
 --device <serial>: Live collection from specific ADB device
 --logs <dir>: Analyze existing log directory
 --output <dir>: Output directory for results
