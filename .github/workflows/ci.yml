@@ -20,8 +20,8 @@ jobs:
       - name: Build with PyInstaller
         run: pyinstaller ward-core.spec
       - name: Test PyInstaller build
-        run: test -f dist/ward-core/config.yaml
+        run: test -f /ward-core/config.yaml
       - name: Test PyInstaller executable
         run: |
-          cd dist/ward-core
+          cd /ward-core
           ./ward-core --version
