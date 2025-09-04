@@ -1,0 +1,140 @@
+# BARGHEST WARD Analysis Configuration
+# This file centralizes all configuration instead of having magic numbers scattered throughout the code
+
+# Collection settings
+collection:
+  collector_type: "hybrid"  # hybrid, adb_shell, bugreport
+  enable_bugreport: true    # Enable bug report collection for tombstone/ANR data
+  bugreport_timeout_seconds: 300
+  include_tombstone_files: true
+  include_anr_traces: true
+  include_dropbox_data: true
+  # APK collection settings (for forensic evidence)
+  collect_userland_apks: false    # Collect user-installed APKs only
+  collect_all_apks: false         # Collect all APKs including system (cannot be true with collect_userland_apks)
+
+# Analysis settings
+analysis_timeout_minutes: 30
+max_log_lines: 1000000
+enable_preprocessing: true
+enable_correlation: true
+
+# Output settings
+output_format: "json"  # json, yaml, html
+include_raw_logs: false
+max_evidence_per_detection: 10
+
+# Quality gates configuration
+quality_gates:
+  min_evidence_items: 1  # Back to 1 since we're improving the indicator counting
+  require_log_evidence: false  # Allow AppOps and behavioral metadata-based detections
+  min_suspicious_indicators: 3  # Require at least 3 meaningful indicators
+  max_metadata_only_detections: 25  # Increased for behavioral analysis
+  time_window_minutes: 30
+
+# Scoring configuration
+scoring:
+  # Risk thresholds (0-100 scale)
+  risk_thresholds:
+    LOW: 20
+    MEDIUM: 49
+    HIGH: 74
+    CRITICAL: 100
+  
+  # Category weights for enhanced scoring
+  category_weights:
+    "Permission Abuse": 1.2
+    "Persistence": 1.5
+    "Network Behavior": 1.4
+    "Stealth / Visibility": 1.6
+    "Crash or Kernel Abuse": 1.7
+    "System Privilege Abuse": 2.0
+    "Privacy Abuse": 1.3
+  
+  # Moderation factors
+  breadth_factor_weight: 0.4
+  confidence_factor_weight: 1.0
+  coverage_penalty: 0.1
+
+# Heuristic configurations
+heuristics:
+  system_security: #V1 Review Complete
+    enabled: true
+    weight: 1.8
+    confidence: "high"
+    timeout_seconds: 300
+    parameters:
+      max_score: 10.0
+      quality_gate_min_indicators: 2
+  
+  permission_analysis: #V1 Review Complete -- very noisy against emulators.
+    enabled: true
+    weight: 1.2
+    confidence: "medium"
+    timeout_seconds: 300
+    parameters:
+      max_score: 10.0
+      sensitive_permission_threshold: 3
+  
+  behavioral_analysis: #V1 Review Complete -- very efficient so far.
+    enabled: true
+    weight: 1.4
+    confidence: "high"
+    timeout_seconds: 300
+    parameters:
+      max_score: 10.0
+      persistence_threshold: 5
+  
+  exploitation_crash: #V1 Review Complete -- very efficient so far.
+    enabled: true
+    weight: 1.5
+    confidence: "high"
+    timeout_seconds: 300
+    parameters:
+      max_score: 10.0
+      crash_pattern_threshold: 3
+  
+  memory_exploitation: #V1 Review Complete -- not enough sample to accurately test yet.
+    enabled: true
+    weight: 1.8
+    confidence: "high"
+    timeout_seconds: 300
+    parameters:
+      max_score: 10.0
+      memory_threshold: 100000
+
+  system_anomalies: #V1 Review Complete -- only use this for in detail analysis. Non-technical users will not see this valuable.
+    enabled: true
+    weight: 1
+    confidence: "low"
+    timeout_seconds: 300
+    parameters:
+      max_score: 10.0
+      anomaly_threshold: 5
+
+  user_analysis: #V1 Review Complete -- Effective
+    enabled: false
+    weight: 1.3
+    confidence: "high"
+    timeout_seconds: 300
+    parameters:
+      max_score: 10.0
+      min_suspicious_indicators: 1
+
+  dex_analysis: #V1 Review Complete -- not enough sample to accurately test yet.
+    enabled: true
+    weight: 1.2
+    confidence: "medium"
+    timeout_seconds: 180
+    parameters:
+      max_score: 10.0
+      multi_signal_threshold: 2
+
+  process_anomaly: #V1 Review Complete 
+    enabled: false
+    weight: 1.3
+    confidence: "low"
+    timeout_seconds: 300
+    parameters:
+      max_score: 10.0
+      min_suspicious_indicators: 2

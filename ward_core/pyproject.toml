@@ -1,0 +1,21 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ward-core"
+version = "2.0.0"
+description = "WARD Core Engine - Android forensics engine"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "GPL-3.0-only" }
+authors = [{ name = "BARGHEST" }]
+
+# Add dependencies as you confirm them; start minimal to avoid CI breakage
+dependencies = []
+
+[project.scripts]
+ward-core = "ward_core.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["ward_core"]
