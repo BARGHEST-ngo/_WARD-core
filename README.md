@@ -23,7 +23,7 @@ This enables civil society, journalists, and investigators to run **self-service
 
 ---
 
-## v2.0.0-beta.1
+## v2.0.0-beta.1.2
 
 - **WARD Core as a package:** now a Python package (`ward-core`) that can be installed and used independently.  
 - **Self-contained binaries:** pre-built executables for Windows, macOS, and Linux (no Python required).  
