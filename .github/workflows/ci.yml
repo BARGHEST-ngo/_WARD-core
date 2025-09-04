@@ -17,11 +17,47 @@ jobs:
         run: |
           python -m ward_core --version
           python main.py --version
-      - name: Build with PyInstaller
-        run: pyinstaller ward-core.spec
-      - name: Test PyInstaller build
-        run: test -f /ward-core/config.yaml
-      - name: Test PyInstaller executable
+      - name: Build with PyInstaller (Windows)
+        if: runner.os == 'Windows'
+        run: pyinstaller --noconfirm --clean --name ward-core --dist build/dist --work build/work --add-data "ward_core/config.yaml;." main.py
+
+      - name: Build with PyInstaller (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: pyinstaller --noconfirm --clean --name ward-core --dist build/dist --work build/work --add-data "ward_core/config.yaml:." main.py
+
+      - name: Debug - List build contents (Windows)
+        if: runner.os == 'Windows'
         run: |
-          cd /ward-core
+          echo "Contents of build/dist/ward-core/:"
+          Get-ChildItem -Recurse build/dist/ward-core | Format-List -Property FullName, Length
+          Write-Host "Looking for config files:"
+          if (Test-Path "build/dist/ward-core/config.yaml") { Write-Host "Found config.yaml" } else { Write-Host "config.yaml not found" }
+
+      - name: Debug - List build contents (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: |
+          echo "Contents of build/dist/ward-core/:"
+          ls -la build/dist/ward-core/ || echo "Directory doesn't exist"
+          echo "Looking for config files:"
+          find build/dist/ward-core/ -name "*.yaml" -o -name "*.yml" || echo "No yaml files found"
+
+      - name: Test PyInstaller build (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          if (!(Test-Path "build/dist/ward-core/config.yaml")) { Write-Error "config.yaml not found"; exit 1 }
+
+      - name: Test PyInstaller build (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: test -f build/dist/ward-core/config.yaml
+
+      - name: Test PyInstaller executable (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          cd build/dist/ward-core
+          .\ward-core.exe --version
+
+      - name: Test PyInstaller executable (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: |
+          cd build/dist/ward-core
           ./ward-core --version

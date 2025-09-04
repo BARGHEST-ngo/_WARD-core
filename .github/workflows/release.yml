@@ -19,7 +19,7 @@ jobs:
       - run: pyinstaller --noconfirm --clean --name ward-core --dist build/dist --work build/work --add-data "ward_core\\config.yaml;." main.py
       # Verify config.yaml is bundled
       - run: powershell "Get-ChildItem -Path build/dist/ward-core | Select-Object Name"
-      - run: powershell "Test-Path build/dist/ward-core/config.yaml"
+      - run: powershell -Command "if (!(Test-Path 'build/dist/ward-core/config.yaml')) { Write-Error 'config.yaml not found'; exit 1 }"
       # Zip and checksum
       - run: powershell Compress-Archive -Path build/dist/ward-core/* -DestinationPath ward-core-${{ github.ref_name }}-windows-x64.zip
       - run: powershell "(Get-FileHash ward-core-${{ github.ref_name }}-windows-x64.zip -Algorithm SHA256).Hash | Out-File ward-core-${{ github.ref_name }}-windows-x64.zip.sha256"
