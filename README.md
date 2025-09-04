@@ -13,6 +13,9 @@ Rather than vendor telemetry, malware signatures, or preloaded IOCs, WARD uses h
 - location misuse  
 - persistent background processes  
 - memory crashes
+- groups crash/heap-dump signals into episodes
+- correlates zero-click media vectors and corroborators
+- correlates dex2oat/dexopt logs and code-cache activity to detect secondary or in-memory DEX loading
 
 This enables civil society, journalists, and investigators to run **self-service device triage**, making spyware identification more accessible to many.
 
