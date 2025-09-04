@@ -19,8 +19,6 @@ jobs:
           python main.py --version
       - name: Check PyInstaller version
         run: pyinstaller --version
-
-
       - name: Verify config file exists (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
