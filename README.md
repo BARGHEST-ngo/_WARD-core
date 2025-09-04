@@ -1,4 +1,4 @@
-# WARD Core v2.0.0-beta.1.2 - Standalone engine release
+# WARD Core v2.0.0-beta.1.2 - standalone engine
 
 This is the first standalone release of the WARD Core engine, this is the backend engine of the main WARD project. The main project is here: https://github.com/BARGHEST-ngo/_WARD-UI
 
