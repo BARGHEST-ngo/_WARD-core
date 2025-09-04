@@ -14,7 +14,7 @@ jobs:
           python-version: ${{ matrix.python }}
       - name: Install dependencies
         run: pip install -e . pyinstaller
-      - name: Smoke: version prints
+      - name: "Smoke: version prints"
         run: |
           python -m ward_core --version
           python main.py --version
