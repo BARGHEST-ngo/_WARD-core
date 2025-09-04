@@ -10,7 +10,7 @@ Rather than vendor telemetry, malware signatures, or preloaded IOCs, WARD uses h
 
 - abnormal wakelock usage  
 - unexplained battery drain  
-- location misuse  
+- location/camera/mic misuse  
 - persistent background processes  
 - memory crashes
 - groups crash/heap-dump signals into episodes
