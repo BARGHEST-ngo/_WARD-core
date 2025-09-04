@@ -1,121 +1,168 @@
-# WARD core v2.0.0-beta.1.2 - standalone engine
+# WARD Core v2.0.0-beta.1.2 — Standalone Engine
 
-This is the first standalone release of the WARD core engine, this is the backend engine of the main WARD project. The main project is here: https://github.com/BARGHEST-ngo/_WARD-UI
+This is the first standalone release of the WARD core engine — the backend engine of the main WARD project. The UI lives here: **[BARGHEST-ngo/_WARD-UI](https://github.com/BARGHEST-ngo/_WARD-UI)**.
 
-WARD is a modular, open-source and decentralised tool for behavioral mobile forensics analysis and artifact acquisition using Android ADB–accessible data. It's developed by [BARGHEST](https://barghest.asia), a non-profit organization aiming to support the democratization of threat intelligence in the majority world.
-It grabs and analyses a wide range of live-state system artifacts — crash logs, process and thread listings, diagnostic outputs, Wi-Fi manager logs, installed apps — to preserve forensic evidence and surface patterns that might indicate spyware or other unwanted activity.
-Instead of relying on vendor telemetry, malware signatures, or preloaded IOCs, WARD uses heuristics to spot anomalies like:
+WARD is a modular, open-source, decentralised tool for **behavioural mobile forensics** and artifact acquisition using Android ADB–accessible data. It’s developed by **[BARGHEST](https://barghest.asia)**, a non-profit supporting the democratisation of threat intelligence in the majority world.
 
-    abnormal wakelock usage
-    unexplained battery drain
-    location misuse
-    persistent background processes
-    memory crashes
+WARD collects and analyses a wide range of live-state system artifacts — crash logs, process/thread listings, diagnostic outputs, Wi-Fi manager logs, installed apps — to preserve forensic evidence and surface patterns that might indicate spyware or other unwanted activity.
 
-This lets civil society, journalists, and investigators run self-service device triage — making spyware identification more readily available to the many.
+Rather than vendor telemetry, malware signatures, or preloaded IOCs, WARD uses heuristics to spot anomalies such as:
 
-It should be noted that this is a beta test release, since heuristics require further tuning across various different OEMs. 
+- abnormal wakelock usage  
+- unexplained battery drain  
+- location misuse  
+- persistent background processes  
+- memory crashes
+
+This enables civil society, journalists, and investigators to run **self-service device triage**, making spyware identification more accessible to many.
+
+> **Beta notice:** heuristics still require tuning across different OEMs; this is a beta test release.
+
+---
 
 ## v2.0.0-beta.1
 
-- **WARD Core**:  is now a Python package (`ward-core`) that can be installed and used independently
-- **Self-Contained Binaries**: Pre-built executables for Windows, macOS, and Linux - no Python installation required
-- **Preserved CLI Interface**: All existing command-line functionality maintained for backward compatibility
-- **Enhanced Metadata**: Analysis results include engine version and schema version for better integration
+- **WARD Core as a package:** now a Python package (`ward-core`) that can be installed and used independently.  
+- **Self-contained binaries:** pre-built executables for Windows, macOS, and Linux (no Python required).  
+- **Preserved CLI:** existing command-line functionality maintained for backward compatibility.  
+- **Enhanced metadata:** analysis results include engine and schema versions for better integration.
+
+---
 
 ## Downloads
 
-Choose the appropriate binary for your platform:
+Choose the binary for your platform:
 
-- **Windows x64**: `ward-core-v2.0.0-windows-x64.zip`
-- **Linux x64**: `ward-core-v2.0.0-linux-x64.zip` 
-- **macOS Intel**: `ward-core-v2.0.0-macos-x64.zip`
-- **macOS Apple Silicon**: `ward-core-v2.0.0-macos-arm64.zip`
+- **Windows x64:** `ward-core-v2.0.0-windows-x64.zip`  
+- **Linux x64:** `ward-core-v2.0.0-linux-x64.zip`  
+- **macOS Intel:** `ward-core-v2.0.0-macos-x64.zip`  
+- **macOS Apple Silicon:** `ward-core-v2.0.0-macos-arm64.zip`
 
-Each download includes SHA256 checksums for verification.
+Each download includes **SHA-256 checksums** for verification.
 
-##  Usage
+---
 
-### Prerequisites: USB Debugging enabled on the device (Developer options)
-### Prerequisites: Android Debug Bridge (ADB)
+## Usage
 
-Required for live device collection. Not needed when analyzing existing logs.
-Install “Android SDK Platform‑Tools” and ensure adb is on your PATH.
+### Prerequisites
 
-## Install instructions
+- **USB debugging** enabled on the device (Developer options).  
+- **Android Debug Bridge (ADB)** installed and on your `PATH`. Required for live device collection; not needed when analysing existing logs.
 
-Windows
-- Download: https://developer.android.com/tools/releases/platform-tools
-- Extract to C:\Android\platform-tools (or any folder)
-- Add that folder to PATH (System Properties → Environment Variables → Path → New)
-- Optional: install your device’s OEM USB driver if the device doesn’t appear
+Install “Android SDK Platform-Tools” and ensure `adb` is available on your system `PATH`.
 
-macOS
-- Homebrew: brew install android-platform-tools
-- Or download from Google (link above) and add platform-tools to PATH
+---
 
-Linux (Debian/Ubuntu)
-- sudo apt-get install android-tools-adb
-- Or download from Google (link above) and add platform-tools to PATH
+## ADB Install Instructions
 
-Verify ADB
+### Windows
+1. Download: **[Android Platform-Tools](https://developer.android.com/tools/releases/platform-tools)**  
+2. Extract to `C:\Android\platform-tools` (or any folder).  
+3. Add that folder to **PATH** (System Properties → Environment Variables → *Path* → **New**).  
+4. Optional: install your device’s OEM USB driver if the device doesn’t appear.
 
-- adb version → shows the installed version
-- adb devices → should list your phone as device (authorize the USB debugging prompt on the device)
+### macOS
+- With Homebrew:
+  ```bash
+  brew install android-platform-tools
+  ```
+- Or download from Google (link above) and add `platform-tools` to your `PATH`.
+
+### Linux (Debian/Ubuntu)
+```bash
+sudo apt-get install android-tools-adb
+```
+Or download from Google (link above) and add `platform-tools` to your `PATH`.
+
+### Verify ADB
+```bash
+adb version   # shows the installed version
+adb devices   # should list your phone as "device" (authorise the USB debugging prompt)
+```
+
+---
 
 ## Binary Usage
 
-### Extract the ZIP and run the executable with a device connected to ADB
-./ward-core.exe
+Extract the ZIP and run the executable with a device connected to ADB:
 
-You have the following options for further customization
---version: Print engine version
---config <path>: Specify configuration file (optional, uses bundled default) *we recommmend reviewing the [configuration file](https://github.com/BARGHEST-ngo/_WARD-core/blob/main/ward_core/config.yaml) to see what available options are there. If you wish to select options such as 'APK acquisition' you need to use a custom config* 
---device <serial>: Live collection from specific ADB device
---logs <dir>: Analyze existing log directory
---output <dir>: Output directory for results
---profile <name>: Collection profile (standard, etc.)
+```bash
+# Windows (PowerShell/CMD)
+.\ward-core.exe
 
-#### Forensics artifacts output
+# macOS/Linux
+./ward-core
+```
 
-Once the analysis is complete, a complete forensics snapshot will be contained in releases root folder:
+### CLI Options
 
-./_internal/ward_core/collections
-Default (no --output): ./collections\YYYY\MM\<timestamp_model_serial>\ relative to the current working directory
-- Or with --output OUTPUT_DIR: OUTPUT_DIR\YYYY\MM\<timestamp_model_serial>\
+```
+--version                 Print engine version
+--config <path>           Path to configuration file (optional; uses bundled default)
+--device <serial>         Live collection from a specific ADB device
+--logs <dir>              Analyse an existing log directory
+--output <dir>            Output directory for results
+--profile <name>          Collection profile (e.g., standard)
+```
 
-In this directory, you will see each scan folder contains 
+We **recommend reviewing** the default **[configuration file](https://github.com/BARGHEST-ngo/_WARD-core/blob/main/ward_core/config.yaml)** to understand available options.  
+If you want features like **APK acquisition**, supply a **custom config** with `--config`.
 
-Risk_assessment.json 
-Which contains a full break down of the devices current security state based on the heurstics ran.
-Example below indicating a behavioural detection for [NoviSpy](https://www.amnesty.org/en/wp-content/uploads/2024/12/EUR7088132024ENGLISH.pdf):
+---
 
-<img width="1282" height="1102" alt="image" src="https://github.com/user-attachments/assets/08966f7f-9001-405d-97f2-017c843838eb" />
+## Forensic Artifacts Output
 
-### Python Package Usage
+On completion, a full forensic snapshot is written under the collections root:
+
+- **Default (no `--output`):**
+  ```
+  ./collections/YYYY/MM/<timestamp_model_serial>/
+  ```
+- **With `--output OUTPUT_DIR`:**
+  ```
+  OUTPUT_DIR/YYYY/MM/<timestamp_model_serial>/
+  ```
+
+Inside each scan folder you’ll find, among other files:
+
+- **`Risk_assessment.json`** — a full breakdown of the device’s current security state based on the heuristics run.  
+  Example indicating a behavioural detection for **[NoviSpy](https://www.amnesty.org/en/wp-content/uploads/2024/12/EUR7088132024ENGLISH.pdf)**:
+
+  <img width="1282" height="1102" alt="Risk assessment example" src="https://github.com/user-attachments/assets/08966f7f-9001-405d-97f2-017c843838eb" />
+
+---
+
+## Python Package Usage
+
+```bash
 pip install ward-core
+
 ward-core --version
 python -m ward_core --version
+```
 
-#### JSON Output Schema
+### JSON Output Schema
 
+```json
 {
   "metadata": {
     "engineVersion": "2.0.0",
     "schemaVersion": 1
   },
-  "heuristic_results": { ... },
+  "heuristic_results": {},
   "overall_score": 0.0,
   "risk_level": "low"
 }
+```
 
+**Full changelog:** https://github.com/BARGHEST-ngo/_WARD-core/commits/v2.0.0-beta.1
 
-**Full Changelog**: https://github.com/BARGHEST-ngo/_WARD-core/commits/v2.0.0-beta.1
+---
 
-## Important notes
+## Important Notes
 
--Unsigned Binaries: macOS users may see Gatekeeper warnings - this is expected for unsigned binaries
--Python 3.11+: Source installation requires Python 3.11 or later
--Backward Compatibility: All existing WARD workflows and integrations should continue working
--ADB install is *required*
--First-run on macOS may require right-click → Open to bypass Gatekeeper
+- **Unsigned binaries:** macOS users may see Gatekeeper warnings — expected for unsigned binaries.  
+- **Python 3.11+:** source installation requires Python 3.11 or later.  
+- **Backward compatibility:** existing WARD workflows and integrations should continue working.  
+- **ADB required:** for live device collection.  
+- **First run on macOS:** may require *Right-click → Open* to bypass Gatekeeper.
