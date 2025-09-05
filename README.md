@@ -1,21 +1,25 @@
 # WARD Core v2.0.0-beta.1.2 — Standalone Engine
 
-This is the first standalone release of the WARD core engine — the backend engine of the main WARD project. The UI lives here: **[BARGHEST-ngo/_WARD-UI](https://github.com/BARGHEST-ngo/_WARD-UI)**.
+This is the standalone release of the WARD core engine — the backend engine of the main WARD software. The primary desktop application lives here: **[BARGHEST-ngo/_WARD-UI](https://github.com/BARGHEST-ngo/_WARD-UI)**.
+
+Note: This engine is designed specifically for the [WARD app]((https://github.com/BARGHEST-ngo/_WARD-UI)) and thus, functionality exists purely on the basis of that _right now_. Usability of the core engine may be difficult for non-technical and heurstic results may be difficult to interpret when using the core engine.
+This is because it's designed to be technical under the hood. If you are a non-technical user and wish to abstract away the technical aspects, you should usee the app first. For technical users, we will release development guides in the coming months. 
+
+What is WARD? 
 
 WARD is a modular, open-source, decentralised tool for **behavioural mobile forensics** and artifact acquisition using Android ADB–accessible data. It’s developed by **[BARGHEST](https://barghest.asia)**, a non-profit supporting the democratisation of threat intelligence in the majority world.
+Heavily inspired by the legendary work that is [AndroidQF](https://github.com/botherder/androidqf) we wanted to take this further by enhancing coverage to forensics logs and building a heurstics behavioural pattern engine ontop for self-service forensics analysis providing a programmatic triaging mechanism. WARD collects and analyses a wide range of live-state system artifacts — crash logs, process/thread listings, diagnostic outputs, Wi-Fi manager logs, installed apps — to preserve forensic evidence and surface patterns that might indicate spyware or other unwanted activity.
 
-WARD collects and analyses a wide range of live-state system artifacts — crash logs, process/thread listings, diagnostic outputs, Wi-Fi manager logs, installed apps — to preserve forensic evidence and surface patterns that might indicate spyware or other unwanted activity.
+Rather than vendor telemetry, malware signatures, or preloaded IOCs, WARD uses behavioral based heuristics to spot patterns of malicious behavior. Our current heurstics cover:
 
-Rather than vendor telemetry, malware signatures, or preloaded IOCs, WARD uses heuristics to spot anomalies such as:
-
-- abnormal wakelock usage  
-- unexplained battery drain  
-- location/camera/mic misuse  
-- persistent background processes  
-- memory crashes
-- groups crash/heap-dump signals into episodes
-- correlates zero-click media vectors and corroborators
-- correlates dex2oat/dexopt logs and code-cache activity to detect secondary or in-memory DEX loading
+- *Memory analysis:* Signals against suspicious in-memory DEX loading, secondary DEX files from external storage, and shell-initiated code compilation that may indicate fileless malware or dynamic code injection.
+- *System security:* Signals against persistence mechanisms, suspicious app behaviors, unusual service patterns, and malware-like activity patterns across system logs
+- *Permission analysis:* Identifies dangerous permission abuse, privilege escalation attempts, and apps requesting excessive or suspicious permission combinations
+- *Crash analysis:* Detects crash patterns that may indicate exploitation attempts, buffer/heap overflows, or targeted attacks against system components
+- *Memory exploitation:* Attempts to identifies memory exploitation attempts synonymous with zero-click and one-click activity. It performs episode-based temporal analysis to identify memory corruption and exploitation attempts. Monitoring native crashes (SIGSEGV, SIGABRT, SIGBUS), heap exploitation (overflows, UAF, double-free), kernel driver abuse (Binder, GPU, futex, perf events), and high-value zero-click targets like media parsers, WebView, and system services. Related events are grouped within 15-second windows, applying scoring boosts for background zero-click exploits and dampening for user-triggered one-click crashes, while detecting repeated exploitation attempts and post-exploitation artifacts like HPROF dumps, OOM states, and log tampering.
+- *User analysis:* Detects anomalous user interaction patterns and suspicious user behavior that may indicate compromise
+- *System anomalies (disabled by default):* Catches general system irregularities and anomalous behaviors that don't fit other specific categories
+- *Process anomalies (disabbled by default):* Monitors process creation patterns, suspicious process behaviors, and process-level indicators of compromise
 
 This enables civil society, journalists, and investigators to run **self-service device triage**, making spyware identification more accessible to many.
 
