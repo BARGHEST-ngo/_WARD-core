@@ -276,15 +276,15 @@ class HybridCollector(BaseCollector):
                 encoding='utf-8',
                 errors='ignore'  # Handle encoding issues gracefully
             )
-            
+
             execution_time = time.time() - start_time
             self.logger.info(f"Bug report generation completed in {execution_time:.1f}s")
-            
+
             if result.returncode != 0:
                 error_msg = f"Bug report generation failed: {result.stderr}"
                 self.logger.error(error_msg)
                 return None
-            
+
             if output_file.exists():
                 self.logger.info(f"Bug report generated: {output_file} ({output_file.stat().st_size / (1024*1024):.1f} MB)")
                 return output_file
@@ -293,14 +293,18 @@ class HybridCollector(BaseCollector):
                 possible_files = list(output_dir.glob("bugreport*.zip")) + list(output_dir.glob("bugreport*.txt"))
                 if possible_files:
                     return possible_files[0]
-                
+
                 self.logger.error("Bug report file was not created")
                 return None
-                
+
         except subprocess.TimeoutExpired:
             error_msg = f"Bug report generation timed out after {self.config.bugreport_timeout_seconds}s"
             self.logger.error(error_msg)
             return None
+        except KeyboardInterrupt:
+            self.logger.warning("Bug report generation interrupted by user")
+            # Re-raise KeyboardInterrupt to allow proper cleanup at higher levels
+            raise
         except Exception as e:
             self.logger.error(f"Bug report generation failed: {e}")
             return None

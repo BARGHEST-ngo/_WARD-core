@@ -265,7 +265,7 @@ class BehavioralAnalysisHeuristic(BaseHeuristic):
         """
         Create a consolidated detection from multiple similar detections to reduce noise.
         """
-        from logic.models import Detection, Evidence, EvidenceType
+        from ward_core.logic.models import Detection, Evidence, EvidenceType
 
         # Use the highest severity detection as base
         base_detection = detections[0]
