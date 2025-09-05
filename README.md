@@ -1,4 +1,4 @@
-# WARD Core v2.0.0-beta.1.2 — Standalone Engine
+# WARD Core v2.0.0-beta — Standalone Engine
 
 This is the standalone release of the WARD core engine — the backend engine of the main WARD software. The primary desktop application lives here: **[BARGHEST-ngo/_WARD-UI](https://github.com/BARGHEST-ngo/_WARD-UI)**.
 
