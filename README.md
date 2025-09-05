@@ -2,7 +2,7 @@
 
 This is the standalone release of the WARD core engine — the backend engine of the main WARD software. The primary desktop application lives here: **[BARGHEST-ngo/_WARD-UI](https://github.com/BARGHEST-ngo/_WARD-UI)**.
 
-Note: This engine is designed specifically for the [WARD app]((https://github.com/BARGHEST-ngo/_WARD-UI)) and thus, functionality exists purely on the basis of that _right now_. Usability of the core engine may be difficult for non-technical and heurstic results may be difficult to interpret when using the core engine.
+Note: This engine is designed specifically for the [WARD app]((https://github.com/BARGHEST-ngo/_WARD-UI)) and thus, functionality exists purely on the basis of that _right now_. Usability isn't really the focus of this part of the project, since it's built specifically to intergrate into our UI components. The use of the core engine may be difficult for non-technical and heurstic results may be difficult to interpret when using the core engine if you're not familar with what you're looking at.
 This is because it's designed to be technical under the hood. If you are a non-technical user and wish to abstract away the technical aspects, you should usee the app first. For technical users, we will release development guides in the coming months. 
 
 What is WARD? 
