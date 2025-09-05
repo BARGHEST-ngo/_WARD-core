@@ -261,12 +261,13 @@ class DexAnalysisHeuristic(BaseHeuristic):
                     ]
                     
                     detections.append(Detection(
+                        category="Memory Exploitation",
+                        subcategory="DEX Analysis",
                         title="Suspicious DEX Compilation",
                         description=f"DEX compilation from suspicious directory: {classpath_dir}",
                         severity=Severity.HIGH,
                         evidence=evidence,
-                        package_name="system",
-                        heuristic_name=self.name
+                        package="system"
                     ))
             
             # Check for suspicious compilation reasons
@@ -284,12 +285,13 @@ class DexAnalysisHeuristic(BaseHeuristic):
                     ]
                     
                     detections.append(Detection(
+                        category="Memory Exploitation",
+                        subcategory="DEX Analysis",
                         title="Suspicious DEX Compilation Reason",
                         description=f"DEX compilation with suspicious reason: {reason}",
                         severity=Severity.MEDIUM,
                         evidence=evidence,
-                        package_name="system",
-                        heuristic_name=self.name
+                        package="system"
                     ))
         
         return detections
@@ -316,12 +318,13 @@ class DexAnalysisHeuristic(BaseHeuristic):
                     ]
                     
                     detections.append(Detection(
+                        category="Memory Exploitation",
+                        subcategory="DEX Analysis",
                         title="Suspicious Secondary DEX Loading",
                         description=f"Secondary DEX loading from suspicious path: {dex_path}",
                         severity=Severity.HIGH,
                         evidence=evidence,
-                        package_name="system",
-                        heuristic_name=self.name
+                        package="system"
                     ))
         
         return detections
@@ -348,12 +351,13 @@ class DexAnalysisHeuristic(BaseHeuristic):
                     ]
                     
                     detections.append(Detection(
+                        category="Memory Exploitation",
+                        subcategory="DEX Analysis",
                         title="Suspicious Code Cache Activity",
                         description=f"Code cache compilation from suspicious path: {cache_path}",
                         severity=Severity.MEDIUM,
                         evidence=evidence,
-                        package_name="system",
-                        heuristic_name=self.name
+                        package="system"
                     ))
         
         return detections
@@ -489,10 +493,12 @@ class DexAnalysisHeuristic(BaseHeuristic):
         summary = f"Suspicious DEX activity detected: {', '.join(set(indicator_types))}"
 
         return Detection(
-            heuristic_name=self.name,
+            category="Memory Exploitation",
+            subcategory="DEX Analysis",
             severity=severity,
             confidence=confidence,
-            summary=summary,
+            title="Suspicious DEX Activity",
+            description=summary,
             evidence=evidence
         )
 
