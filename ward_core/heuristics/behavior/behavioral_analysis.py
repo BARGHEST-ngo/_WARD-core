@@ -1,7 +1,7 @@
 """
 Behavioral Analysis Heuristic - Modern Android Spyware Detection
 
-Detects sophisticated behavioral patterns used by commercial/operator-grade spyware:
+Detects behavioral patterns used by commercial/operator-grade spyware:
 - Background execution abuse with proper UID correlation
 - Stealth behaviors during screen-off periods with temporal clustering
 - Accessibility service abuse for credential theft and UI automation
@@ -10,12 +10,12 @@ Detects sophisticated behavioral patterns used by commercial/operator-grade spyw
 - Power management abuse and wakelock patterns
 
 Designed to detect:
-- Commercial spyware (Hermit, Predator class) with social engineering installs
+- Commercial spyware (Hermit, Predator class) 
 - Banking trojans using accessibility services for overlay attacks
-- Toll fraud malware with background execution and premium SMS
+- malware with background execution 
 - System-integrated implants with legitimate-looking behavior patterns
 
-Uses shared services for proper Android correlation and reduced false positives.
+Uses shared services for correlation and reduced false positives.
 """
 
 import re
