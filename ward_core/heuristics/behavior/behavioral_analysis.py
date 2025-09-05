@@ -302,7 +302,7 @@ class BehavioralAnalysisHeuristic(BaseHeuristic):
             category=base_detection.category,
             technical_details=consolidated_details,
             evidence=[Evidence(
-                type=EvidenceType.PATTERN,
+                type=EvidenceType.DERIVED,
                 content=f"Consolidated from {count} similar detections",
                 confidence=0.8
             )]

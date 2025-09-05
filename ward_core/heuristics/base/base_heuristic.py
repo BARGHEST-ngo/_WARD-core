@@ -244,7 +244,7 @@ class BaseHeuristic(ABC):
         Returns:
             Created detection
         """
-        from logic.models.detection import Severity
+        from ward_core.logic.models.detection import Severity
         
         # Convert string severity to enum
         severity_map = {

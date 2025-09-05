@@ -295,7 +295,7 @@ class DataLoaderService:
                             raw_content = f.read()
 
                         # Create a basic parsed entry for unparsed files
-                        from infrastructure.parsers.base_parser import ParsedLogEntry
+                        from ward_core.infrastructure.parsers.base_parser import ParsedLogEntry
                         raw_entry = ParsedLogEntry(
                             entry_type='raw_file',
                             source_file=str(source.path),
