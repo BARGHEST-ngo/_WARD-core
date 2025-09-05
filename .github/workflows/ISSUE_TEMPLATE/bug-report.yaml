@@ -1,0 +1,74 @@
+name: Bug report
+description: Help us fix a problem
+title: "[bug]: <short summary>"
+labels: ["type: bug", "needs/triage"]
+assignees: []
+# Optional: auto-add to a project (submitter must have write access)
+# projects: ["ORG/123"]
+body:
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Before you submit
+      options:
+        - label: I searched existing issues
+          required: true
+        - label: I read the docs/FAQ
+          required: false
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      placeholder: e.g. Crash when tapping Save
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - critical (data loss/crash)
+        - high
+        - medium
+        - low
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. …
+        2. …
+        3. …
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: App/SDK version
+      placeholder: 1.2.3
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      multiple: true
+      options: [Android, iOS, Web, Linux, macOS, Windows]
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Paste any logs (no backticks needed)
+      render: shell
