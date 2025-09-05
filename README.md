@@ -1,14 +1,16 @@
 # WARD Core v2.0.0-beta — Standalone Engine
 
-This is the standalone release of the WARD core engine — the backend engine of the main WARD software. The primary desktop application lives here: **[BARGHEST-ngo/_WARD-UI](https://github.com/BARGHEST-ngo/_WARD-UI)**.
+This is the standalone beta release of the WARD core engine — the backend engine of the main WARD software. The primary desktop application lives here: **[BARGHEST-ngo/_WARD-UI](https://github.com/BARGHEST-ngo/_WARD-UI)**.
 
 Note: This engine is designed specifically for the [WARD app]((https://github.com/BARGHEST-ngo/_WARD-UI)) and thus, functionality exists purely on the basis of that _right now_. Usability isn't really the focus of this part of the project, since it's built specifically to intergrate into our UI components. The use of the core engine may be difficult for non-technical and heurstic results may be difficult to interpret when using the core engine if you're not familar with what you're looking at.
 This is because it's designed to be technical under the hood. If you are a non-technical user and wish to abstract away the technical aspects, you should usee the app first. For technical users, we will release development guides in the coming months. 
 
-What is WARD? 
+://WARD 
 
 WARD is a modular, open-source, decentralised tool for **behavioural mobile forensics** and artifact acquisition using Android ADB–accessible data. It’s developed by **[BARGHEST](https://barghest.asia)**, a non-profit supporting the democratisation of threat intelligence in the majority world.
 Heavily inspired by the legendary work that is [AndroidQF](https://github.com/botherder/androidqf) we wanted to take this further by enhancing coverage to forensics logs and building a heurstics behavioural pattern engine ontop for self-service forensics analysis providing a programmatic triaging mechanism. WARD collects and analyses a wide range of live-state system artifacts — crash logs, process/thread listings, diagnostic outputs, Wi-Fi manager logs, installed apps — to preserve forensic evidence and surface patterns that might indicate spyware or other unwanted activity.
+
+This enables civil society, journalists, and investigators to run **self-service device triage**, making spyware identification more accessible to many.
 
 Rather than vendor telemetry, malware signatures, or preloaded IOCs, WARD uses behavioral based heuristics to spot patterns of malicious behavior. Our current heurstics cover:
 
@@ -21,9 +23,9 @@ Rather than vendor telemetry, malware signatures, or preloaded IOCs, WARD uses b
 - *System anomalies (disabled by default):* Catches general system irregularities and anomalous behaviors that don't fit other specific categories
 - *Process anomalies (disabbled by default):* Monitors process creation patterns, suspicious process behaviors, and process-level indicators of compromise
 
-This enables civil society, journalists, and investigators to run **self-service device triage**, making spyware identification more accessible to many.
+://Data_collection: The engine collects both Bug Report and all forensic ADB logs excluding PII data (such as SMS). It stores these in the collections folder for evidence & merges the two, and parses it all for analysis. 
 
-> **Beta notice:** heuristics still require tuning across different OEMs; this is a beta test release.
+> **IMPORTANT Beta notice:** functionality may cause issues and known issues are tracked in this repo. please report any issues you may have. heuristics still require tuning across different OEMs; please be kind this is a beta test release currently.
 
 ---
 
