@@ -29,7 +29,7 @@ Rather than vendor telemetry, malware signatures, or preloaded IOCs, WARD uses b
 
 ---
 
-## v2.0.0-beta.1.2
+## v2.0.0-beta
 
 - **WARD Core as a package:** now a Python package (`ward-core`) that can be installed and used independently.  
 - **Self-contained binaries:** pre-built executables for Windows, macOS, and Linux (no Python required).  
