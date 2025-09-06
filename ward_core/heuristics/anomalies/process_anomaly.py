@@ -1,19 +1,8 @@
 """
-Process Anomaly Heuristic - Advanced Android Process Analysis
+Process Anomaly Heuristic
 
 Detects orphaned processes, process-package mismatches, and in-memory DEX loading
 that may indicate fileless code execution or hooking frameworks.
-
-Uses proper Android UID conversion, multi-process app handling, and ActivityManager
-event correlation for accurate detection with minimal false positives.
-
-Key improvements:
-- Proper Android UID math (userId × 100000 + 10000 + appId)
-- Multi-process app support (:service, :worker patterns)
-- Isolated UID handling (WebView sandbox, isolated services)
-- ActivityManager event correlation (am_proc_start, am_kill)
-- /proc/<pid>/cmdline and /proc/<pid>/status parsing
-- In-memory DEX detection via /proc/<pid>/maps
 """
 
 import re
