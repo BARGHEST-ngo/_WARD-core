@@ -1,20 +1,5 @@
 """
-SystemAnomaliesHeuristic - Android system-level anomaly detection
-
-Analyzes realistic Android system anomalies, service crashes, and configuration changes
-to detect system compromises, persistence mechanisms, and unauthorized modifications.
-
-This heuristic focuses on unique system-level indicators not covered by other heuristics:
-- System property changes and tampering
-- Framework service anomalies (PackageManager, WindowManager, etc.)
-- System daemon failures (installd, vold, netd - beyond kernel focus)
-- Resource exhaustion patterns
-- Filesystem anomalies and storage issues
-
-Avoids overlap with:
-- ExploitationCrashHeuristic (native crashes, JNI, ANR)
-- KernelThreatsHeuristic (kernel-level, Binder, SELinux, process deaths)
-- BehavioralAnalysisHeuristic (app behavior patterns)
+SystemAnomaliesHeuristic
 """
 
 import re
