@@ -1,9 +1,5 @@
 """
-System Security Heuristic - Comprehensive Android Security Analysis
-
-This heuristic detects system security issues, privilege escalation attempts,
-and advanced Android security violations including SELinux AVC analysis.
-Implements sophisticated logic with quality gates to prevent false positives.
+System Security Heuristic
 """
 
 import re
