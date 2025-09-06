@@ -1,13 +1,5 @@
 """
-User Analysis Heuristic - Hidden User and Shared User Detection
-
-Detects hidden users, shared user violations, and UID range anomalies
-that may indicate system compromise or unauthorized modifications.
-
-Focuses on realistic ADB log patterns from:
-- dumpsys package for hidden users
-- pm list-users for user enumeration
-- UID mapping analysis
+User Analysis Heuristic
 """
 
 import re
