@@ -1,12 +1,5 @@
 """
-Permission Analysis Heuristic - Refactored Implementation
-
-Detects comprehensive abuse of sensitive Android permissions and sensor access patterns
-using unified analysis of permission declarations, usage patterns, and sensor behavior
-to identify potential spyware or malicious behavior.
-
-This is a clean refactored version of the original permission analysis heuristic,
-following clean architecture principles and zero-trust framework.
+Permission Analysis Heuristic
 """
 
 import re
