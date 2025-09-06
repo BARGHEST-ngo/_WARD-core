@@ -72,28 +72,35 @@ class DataEnricher:
     }
     
     # Suspicious patterns to flag
-    SUSPICIOUS_PATTERNS = {
-        'privilege_escalation': [
-            re.compile(r'su\s+', re.IGNORECASE),
-            re.compile(r'root.*exploit', re.IGNORECASE),
-            re.compile(r'setuid.*0', re.IGNORECASE),
-        ],
-        'data_exfiltration': [
-            re.compile(r'upload.*\d+\s*mb', re.IGNORECASE),
-            re.compile(r'send.*data.*server', re.IGNORECASE),
-            re.compile(r'POST.*binary.*data', re.IGNORECASE),
-        ],
-        'persistence': [
-            re.compile(r'boot.*receiver', re.IGNORECASE),
-            re.compile(r'install.*\.(apk|dex)', re.IGNORECASE),
-            re.compile(r'service.*persistent', re.IGNORECASE),
-        ],
-        'anti_analysis': [
-            re.compile(r'debugger.*detect', re.IGNORECASE),
-            re.compile(r'emulator.*check', re.IGNORECASE),
-            re.compile(r'anti.*virus', re.IGNORECASE),
-        ]
-    }
+    SUSPICIOUS_PATTERNS = [
+    r"\bmagisk\b",
+    r"\bsu\b",
+    r"setuid.*0",
+    r"setgid.*0",
+    r"uid=0\b",
+    r"permission\s+denied.*root",
+    r"dex\s+class\s+loader",
+    r"dalvikvm.*loading.*dex",
+    r"JIT.*compile.*external",
+    r"exec.*(/sdcard|/data/local/tmp)",
+    r"tmp/.*\.so",
+    r"binder.*transaction.*fail",
+    r"futex.*crash",
+    r"perf_event.*overflow",
+    r"gpu.*heap.*corruption",
+    r"libwebview.*crash",
+    r"(media|codec|extractor).*SIG(SEGV|BUS|ILL)",
+    r"tombstone.*abort.*zygote",
+    r"kingroot",
+    r"framaroot",
+    r"vroot",
+    r"towelroot",
+    r"oneclickroot",
+    r"xposed",
+    r"lsp.*posed",
+    r"zygisk",
+    r"riru",
+    ]
     
     def __init__(self, config: Optional[EnrichmentConfig] = None):
         """Initialize the data enricher."""
