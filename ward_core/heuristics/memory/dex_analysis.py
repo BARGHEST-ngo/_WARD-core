@@ -1,13 +1,5 @@
 """
-DEX Analysis Heuristic - In-Memory DEX Loading Detection
-
-Detects secondary DEX loading, code cache anomalies, and in-memory DEX execution
-that may indicate fileless code execution or dynamic code loading.
-
-Focuses on realistic ADB log patterns from:
-- dex2oat and dexopt compilation logs
-- code_cache directory analysis
-- secondary DEX loading patterns
+DEX Analysis Heuristic
 """
 
 import re
@@ -50,7 +42,7 @@ class DexAnalysisHeuristic(BaseHeuristic):
         'secondary_dex_loading': re.compile(r'Loading.*secondary.*dex.*([^\s]+)', re.IGNORECASE),
         'code_cache_compilation': re.compile(r'code_cache.*([^\s]+)', re.IGNORECASE),
 
-        # Real suspicious activity patterns
+        # suspicious activity patterns
         'shell_dex_activity': re.compile(r'shell.*dex.*([^\s]+)', re.IGNORECASE),
         'tmp_dex_files': re.compile(r'/tmp/.*\.dex', re.IGNORECASE),
         'external_dex_files': re.compile(r'/sdcard/.*\.dex', re.IGNORECASE),
