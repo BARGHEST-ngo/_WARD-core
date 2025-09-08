@@ -1,5 +1,6 @@
 """
 Permission Analysis Heuristic
+#TODO:Document this properly
 """
 
 import re
@@ -313,6 +314,7 @@ class PermissionAnalysisHeuristic(BaseHeuristic):
 
         # Whitelist the core Android system package - this is an exception to zero-trust
         # The "android" package represents the core Android system, not a third-party app
+        # TODO: Reasearch if there are possible risks associated with whitelisting "android" package
         if package_name == "android":
             return detections  # Skip analysis for core Android system
 

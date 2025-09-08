@@ -3,6 +3,7 @@ Process Anomaly Heuristic
 
 Detects orphaned processes, process-package mismatches, and in-memory DEX loading
 that may indicate fileless code execution or hooking frameworks.
+This is still exploratory.
 """
 
 import re
@@ -17,7 +18,7 @@ from ward_core.heuristics.memory.dex_analysis import DexAnalysisHeuristic
 class ProcessAnomalyHeuristic(BaseHeuristic):
     """Advanced Android process anomaly detection with proper UID handling."""
 
-    # Android UID constants (from AOSP android_filesystem_config.h)
+    # Android UID constants (taken from from AOSP android_filesystem_config.h)
     PER_USER_RANGE = 100000  # UID range per user
     FIRST_APPLICATION_UID = 10000  # First app UID
     LAST_APPLICATION_UID = 19999   # Last app UID
@@ -28,13 +29,13 @@ class ProcessAnomalyHeuristic(BaseHeuristic):
     USER_APP_UID_PATTERN = re.compile(r'u(\d+)_a(\d+)')  # uX_aY format
     ISOLATED_UID_PATTERN = re.compile(r'u(\d+)_i(\d+)')  # uX_iY format
 
-    # System UID ranges (zero-trust: verify by UID, not process name)
+    # System UID ranges
     SYSTEM_UID_RANGES = [
         (0, 999),      # Root and system UIDs
         (1000, 9999),  # System service UIDs
     ]
 
-    # Suspicious UID patterns that warrant investigation
+    # UID patterns that warrant investigation
     SUSPICIOUS_UID_PATTERNS = [
         # UIDs that shouldn't normally run user processes
         (0, 0),        # Root UID running app processes
@@ -57,7 +58,7 @@ class ProcessAnomalyHeuristic(BaseHeuristic):
         'proc_died': re.compile(r'Process.*(\d+).*died', re.IGNORECASE),
     }
 
-    # REALISTIC suspicious process indicators (behavior-based, not name-based)
+    # Suspicious process path indicators 
     SUSPICIOUS_PROCESS_INDICATORS = {
         # Processes running from suspicious locations
         'suspicious_paths': [
@@ -206,7 +207,7 @@ class ProcessAnomalyHeuristic(BaseHeuristic):
             r'init$',
             r'kernel',
             r'kthread',
-            r'\[.*\]',  # Kernel threads
+            r'\[.*\]',  # Kernel threads (need more research)
         ]
 
         full_context = f"{process_name} {cmdline}"
@@ -429,10 +430,10 @@ class ProcessAnomalyHeuristic(BaseHeuristic):
         return detections
     
     def _detect_process_behavior_anomalies(self, log_data: LogData) -> List[Detection]:
-        """Detect suspicious process behavior using realistic ActivityManager patterns."""
+        """Detect suspicious process behavior using ActivityManager patterns."""
         detections = []
 
-        # Look for realistic process start/death patterns in logcat
+        # Look for process start/death patterns in logcat
         for line in log_data.raw_lines:
             line = line.strip()
 
@@ -482,8 +483,6 @@ class ProcessAnomalyHeuristic(BaseHeuristic):
                     detections.append(detection)
 
         return detections
-
-
     
     def _detect_process_name_mismatches(self, processes: Dict, packages: Dict, log_data: LogData) -> List[Detection]:
         """Detect processes whose names don't match their package processName with in-memory DEX detection."""
@@ -499,8 +498,6 @@ class ProcessAnomalyHeuristic(BaseHeuristic):
             # Skip isolated UIDs (legitimate sandboxing)
             if proc_info.get('is_isolated', False):
                 continue
-
-            # ZERO-TRUST: Don't skip based on process names - verify through UID and behavior
 
             # Find packages with matching UID
             matching_packages = []
@@ -575,5 +572,3 @@ class ProcessAnomalyHeuristic(BaseHeuristic):
                         detections.append(detection)
 
         return detections
-    
-

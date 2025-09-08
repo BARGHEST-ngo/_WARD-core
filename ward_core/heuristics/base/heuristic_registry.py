@@ -172,5 +172,6 @@ class HeuristicRegistry:
 
 
 # Global registry instance
+# TODO: Determine if this is the best way
 registry = HeuristicRegistry()
 

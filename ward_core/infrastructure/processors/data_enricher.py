@@ -2,6 +2,7 @@
 Data enrichment pipeline for parsed log data.
 
 This module adds derived data, correlations, and context to parsed log entries.
+#TODO: need more usinit testing on this, I'm convinced this should be an entirely different optional module outside of WARD-core
 """
 
 import re
@@ -72,34 +73,35 @@ class DataEnricher:
     }
     
     # Suspicious patterns to flag
+        # Suspicious patterns to flag
     SUSPICIOUS_PATTERNS = {
-    "magisk":        r"\bmagisk\b",
-    "su_binary":     r"\bsu\b",
-    "setuid_root":   r"setuid.*0",
-    "setgid_root":   r"setgid.*0",
-    "uid_0":         r"uid=0\b",
-    "root_denied":   r"permission\s+denied.*root",
-    "dex_loader":    r"dex\s+class\s+loader",
-    "dalvik_dex":    r"dalvikvm.*loading.*dex",
-    "jit_external":  r"JIT.*compile.*external",
-    "exec_tmp":      r"exec.*(/sdcard|/data/local/tmp)",
-    "tmp_libs":      r"tmp/.*\.so",
-    "binder_fail":   r"binder.*transaction.*fail",
-    "futex_crash":   r"futex.*crash",
-    "perf_overflow": r"perf_event.*overflow",
-    "gpu_heap":      r"gpu.*heap.*corruption",
-    "webview_crash": r"libwebview.*crash",
-    "media_sig":     r"(media|codec|extractor).*SIG(SEGV|BUS|ILL)",
-    "zygote_abort":  r"tombstone.*abort.*zygote",
-    "kingroot":      r"kingroot",
-    "framaroot":     r"framaroot",
-    "vroot":         r"vroot",
-    "towelroot":     r"towelroot",
-    "oneclickroot":  r"oneclickroot",
-    "xposed":        r"xposed",
-    "lsposed":       r"lsp.*posed",
-    "zygisk":        r"zygisk",
-    "riru":          r"riru",
+    "magisk":        re.compile(r"\bmagisk\b"),
+    "su_binary":     re.compile(r"\bsu\b"),
+    "setuid_root":   re.compile(r"setuid.*0"),
+    "setgid_root":   re.compile(r"setgid.*0"),
+    "uid_0":         re.compile(r"uid=0\b"),
+    "root_denied":   re.compile(r"permission\s+denied.*root"),
+    "dex_loader":    re.compile(r"dex\s+class\s+loader"),
+    "dalvik_dex":    re.compile(r"dalvikvm.*loading.*dex"),
+    "jit_external":  re.compile(r"JIT.*compile.*external"),
+    "exec_tmp":      re.compile(r"exec.*(/sdcard|/data/local/tmp)"),
+    "tmp_libs":      re.compile(r"tmp/.*\.so"),
+    "binder_fail":   re.compile(r"binder.*transaction.*fail"),
+    "futex_crash":   re.compile(r"futex.*crash"),
+    "perf_overflow": re.compile(r"perf_event.*overflow"),
+    "gpu_heap":      re.compile(r"gpu.*heap.*corruption"),
+    "webview_crash": re.compile(r"libwebview.*crash"),
+    "media_sig":     re.compile(r"(media|codec|extractor).*SIG(SEGV|BUS|ILL)"),
+    "zygote_abort":  re.compile(r"tombstone.*abort.*zygote"),
+    "kingroot":      re.compile(r"kingroot"),
+    "framaroot":     re.compile(r"framaroot"),
+    "vroot":         re.compile(r"vroot"),
+    "towelroot":     re.compile(r"towelroot"),
+    "oneclickroot":  re.compile(r"oneclickroot"),
+    "xposed":        re.compile(r"xposed"),
+    "lsposed":       re.compile(r"lsp.*posed"),
+    "zygisk":        re.compile(r"zygisk"),
+    "riru":          re.compile(r"riru"),
     }
     
     def __init__(self, config: Optional[EnrichmentConfig] = None):
@@ -302,15 +304,13 @@ class DataEnricher:
         if self.config.enable_caching and cache_key in self._pattern_cache:
             self._stats['cache_hits'] += 1
             return self._pattern_cache[cache_key] if self._pattern_cache[cache_key] else []
-        
+
         suspicious_flags = []
-        
-        for category, patterns in self.SUSPICIOUS_PATTERNS.items():
-            for pattern in patterns:
-                if pattern.search(content):
-                    suspicious_flags.append(category)
-                    break  # Only flag each category once per entry
-        
+
+        for category, pattern in self.SUSPICIOUS_PATTERNS.items():
+            if pattern.search(content):
+                suspicious_flags.append(category)
+                        
         # Cache result
         if self.config.enable_caching:
             self._pattern_cache[cache_key] = suspicious_flags if suspicious_flags else False

@@ -4,6 +4,9 @@ __pycache__/
 *.pyo
 *.pyd
 
+# ADB collections from dev
+_WARD-core/ward_core/collections
+
 # Virtual environments
 .venv/
 venv/

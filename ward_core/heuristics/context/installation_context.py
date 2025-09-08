@@ -5,6 +5,8 @@ This heuristic analyzes installation sources and provides context for security a
 It determines whether apps were installed via Play Store or sideloaded, which affects
 risk assessment and detection interpretation.
 Note that when analysing emulators, this will be completely messed up since installation sources are always unknown. 
+Bluestacks, for instance, all packages are 'Unknown'
+#TODO: consider emulator detection and adjust risk accordingly. 
 """
 
 import re

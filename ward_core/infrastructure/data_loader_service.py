@@ -1,8 +1,5 @@
 """
-Clean Data Loader Service replacing the monolithic data_loader.py
-
-This service orchestrates collection, parsing, and processing of Android log data
-using the new modular architecture.
+Data Loader Service
 """
 
 from typing import Dict, Any, List, Optional
@@ -18,7 +15,7 @@ from .processors import DataEnricher, DataValidator, CoverageAnalyzer
 
 class DataLoaderService:
     """
-    Clean data loading service that replaces the monolithic data_loader.py
+    Clean data loading service that replaces the data_loader.py
     
     This service orchestrates collection, parsing, and processing of Android log data
     using clean architecture principles.

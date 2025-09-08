@@ -1,5 +1,6 @@
 """
 System Security Heuristic
+#TODO:Document this properly
 """
 
 import re
@@ -72,11 +73,8 @@ def is_isolated_uid(uid_str: str) -> bool:
     except (ValueError, TypeError):
         return False
 
-# Installation context analysis is now handled by the dedicated installation_context heuristic
-
-
 class AdvancedSecurityPatterns:
-    """Advanced Android security patterns for comprehensive analysis."""
+    """Advancing security patterns."""
 
     # Flexible AVC pattern that captures the main structure and remaining fields
     AVC_PATTERN = re.compile(
@@ -100,7 +98,7 @@ class AdvancedSecurityPatterns:
         'permissive': re.compile(r'permissive=([01])', re.IGNORECASE),
     }
 
-    # Cross-app data access patterns (real data exfiltration)
+    # Cross-app data access patterns
     DATA_EXFILTRATION_PATTERNS = [
         # Untrusted app accessing other app's private data
         re.compile(r'avc:\s+denied.*\{\s*(?:read|open)\s*\}.*scontext=u:r:untrusted_app.*tcontext=u:object_r:app_data_file.*path="/data/data/([^/]+)', re.IGNORECASE),
@@ -110,7 +108,7 @@ class AdvancedSecurityPatterns:
         re.compile(r'avc:\s+denied.*\{\s*(?:read|open)\s*\}.*scontext=u:r:platform_app.*tcontext=u:object_r:app_data_file.*path="/data/data/([^/]+)', re.IGNORECASE),
     ]
 
-    # Real privilege escalation patterns (capability attempts)
+    # Privilege escalation patterns (capability attempts)
     PRIVILEGE_ESCALATION_PATTERNS = [
         # Untrusted app attempting dangerous capabilities
         re.compile(r'avc:\s+denied.*\{\s*(?:setuid|setgid|dac_override|sys_admin|sys_module)\s*\}.*scontext=u:r:untrusted_app.*tclass=capability', re.IGNORECASE),
@@ -234,7 +232,8 @@ class AdvancedSecurityPatterns:
     ]
 
     # MAGISK/ROOT detection patterns (updated for modern versions)
-    # These patterns detect actual root activity, not package queries or app names
+    # These patterns detect root activity, not package queries or app names
+    # Some of these first ones are likely to be unrealistic imo
     MAGISK_PATTERNS = [
         # Generic magisk/zygisk patterns (avoid deprecated MagiskHide)
         re.compile(r'magisk.*(?:daemon|service)', re.IGNORECASE),
@@ -254,16 +253,8 @@ class AdvancedSecurityPatterns:
 class SystemSecurityHeuristic(BaseHeuristic):
     """
     Comprehensive Android System Security Analysis.
-
-    This heuristic detects:
-    - Advanced SELinux AVC violations and privilege escalation
-    - Cross-app data access attempts (data exfiltration)
-    - System integrity violations (dm-verity, AVB failures)
-    - Root/Magisk detection and system tampering
-    - Surveillance device access attempts
-    - Apps using system UIDs inappropriately
-    - Suspicious installer sources and package security issues
-    - Attack chain correlation and burst detection
+    
+    #TODO:Document this properly
 
     Quality gates prevent false positives through context-aware analysis,
     build type awareness, and multi-signal correlation.
@@ -343,7 +334,7 @@ class SystemSecurityHeuristic(BaseHeuristic):
         system_detections = self._analyze_system_logs(log_data)
         detections.extend(system_detections)
 
-        # Advanced Security Analysis - collect all log lines
+        # Security Analysis - collect all log lines
         all_lines = log_data.raw_lines
 
         # Detect SELinux mode transitions and create detections for runtime changes
@@ -351,7 +342,7 @@ class SystemSecurityHeuristic(BaseHeuristic):
         selinux_detections = self._create_selinux_transition_detections(selinux_analysis)
         detections.extend(selinux_detections)
 
-        # Advanced SELinux AVC Analysis
+        # SELinux AVC Analysis
         advanced_selinux_detections = self._analyze_advanced_selinux_violations(all_lines, log_data)
         detections.extend(advanced_selinux_detections)
 
@@ -386,7 +377,6 @@ class SystemSecurityHeuristic(BaseHeuristic):
         self.logger.debug(f"Package {package_name}: uid={uid}, installer={installer}, permissions={len(permissions)}")
 
         # Zero-trust: ANY package using system UIDs requires investigation
-        # Never whitelist based on package names - spyware can spoof system package names
         if uid and is_system_uid(str(uid)):
             app_id = extract_app_id(int(uid))
             user_id = extract_user_id(int(uid))
@@ -409,8 +399,6 @@ class SystemSecurityHeuristic(BaseHeuristic):
                 content=f"Installation: {installation_context.installation_method}, Source: {installation_context.installer_source}, Risk: {installation_context.risk_multiplier:.1f}",
                 confidence=0.8
             ))
-    
-        # Dangerous permission analysis is handled by the dedicated permission_analysis heuristic
 
         # Performance optimization: Skip log evidence collection for system apps with low risk
         # This significantly improves performance when analyzing hundreds of system packages

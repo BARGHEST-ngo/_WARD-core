@@ -220,7 +220,7 @@ class AnalyzeDeviceUseCase:
                 "device_state": device.state
             })
             
-            # Step 2: Collect data using new collection system
+            # Collect data using new collection system
             self.progress_logger.warning("Collecting device data...")
             enhanced_logger.create_analysis_log_entry("collection", "Starting data collection")
             log_data = self._collect_live_data(device, collection_profile, output_directory)
@@ -231,7 +231,7 @@ class AnalyzeDeviceUseCase:
                 "collection_profile": collection_profile
             })
             
-            # Step 3: Run analysis
+            # Run analysis
             self.progress_logger.warning("Running heuristic analysis...")
             enhanced_logger.create_analysis_log_entry("analysis", "Starting heuristic analysis")
             result = self.analysis_service.analyze(log_data)
@@ -242,7 +242,7 @@ class AnalyzeDeviceUseCase:
                 "risk_level": result.risk_level.value
             })
             
-            # Step 4: Store results
+            # Store results
             self.progress_logger.warning("Saving results...")
             enhanced_logger.create_analysis_log_entry("storage", "Storing analysis results")
             self._store_results(result, output_directory, log_file_path)
@@ -259,7 +259,8 @@ class AnalyzeDeviceUseCase:
                 execution_time=execution_time
             )
             
-            # Step 5: Finalize collection in archive (for permanent storage)
+            # Finalize collection in archive (for permanent storage)
+            # TODO: Encrypt stored collection for chain of custody
             if not temp_dir_created:  # This is permanent archive storage
                 enhanced_logger.create_analysis_log_entry("archive", "Finalizing collection archive")
                 
@@ -392,6 +393,7 @@ class AnalyzeDeviceUseCase:
         """
         Backward compatibility method - analyze existing logs.
         #TODO: Ensure MVT can intergrate with this format via AndroidQF
+        # Right now it won't
         Args:
             log_directory: Path to directory containing collected logs
             
@@ -451,7 +453,7 @@ class AnalyzeDeviceUseCase:
                     }
                 
             elif len(args) >= 2 and args[0] == "--device":
-                # Mode 3: Live collection with device specification
+                # Live collection with device specification
                 device_serial = args[1]
                 
                 # Parse optional arguments
@@ -499,6 +501,7 @@ class AnalyzeDeviceUseCase:
             }
     
     def _get_usage_message(self) -> str:
+        # TODO: need -h...
         """Get usage message for command line interface."""
         return """Usage:
         python main.py [--verbose|-v]                          # Auto-detect ADB device and collect live data

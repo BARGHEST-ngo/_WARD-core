@@ -21,13 +21,7 @@ class SystemAnomalyType(Enum):
 
 
 class SystemAnomaliesHeuristic(BaseHeuristic):
-    """Heuristic for detecting Android system-level anomalies."""
-    
-    # SPYWARE-FOCUSED patterns based on actual compromise indicators in ADB logs
-
-    # REALISTIC SYSTEM ANOMALIES - Based on actual ADB log patterns
-    # Focus on strange system behavior that doesn't fit other heuristics
-
+    """Heuristic for detecting system-level anomalies."""
     # Property changes (setprop/resetprop/property service)
     PROPERTY_CHANGE_PATTERNS = [
         re.compile(r'\bsetprop\s+([a-zA-Z0-9_.]+)\s+([^\s]+)', re.IGNORECASE),
@@ -44,14 +38,14 @@ class SystemAnomaliesHeuristic(BaseHeuristic):
         re.compile(r'WindowManager.*(freeze|unfreeze|timeout|orientation).*failed', re.IGNORECASE),
     ]
 
-    # System daemon failures (realistic daemon names)
+    # System daemon failures (daemon names)
     DAEMON_FAILURE_PATTERNS = [
         re.compile(r'init: Service (\S+) (?:crashed|died), restarting', re.IGNORECASE),
         re.compile(r'init: Service (\S+) repeatedly crashed, restarting too quickly', re.IGNORECASE),
         re.compile(r'(\baudioserver|cameraserver|mediaserver|media\.extractor|media\.codec|vold|netd|keystore2)\b.*(crash|died|fatal)', re.IGNORECASE),
     ]
 
-    # Resource exhaustion (realistic patterns)
+    # Resource exhaustio
     RESOURCE_ANOMALY_PATTERNS = [
         re.compile(r'lowmemorykiller: Killing proc', re.IGNORECASE),
         re.compile(r'OutOfMemoryError', re.IGNORECASE),
@@ -59,7 +53,7 @@ class SystemAnomaliesHeuristic(BaseHeuristic):
         re.compile(r'SurfaceFlinger:.*failed to allocate', re.IGNORECASE),
     ]
 
-    # Filesystem anomalies (realistic filesystem errors)
+    # Filesystem anomalies (filesystem errors)
     FILESYSTEM_ANOMALY_PATTERNS = [
         re.compile(r'EXT4-fs error \(device ([^)]+)\):', re.IGNORECASE),
         re.compile(r'Buffer I/O error on dev (\S+)', re.IGNORECASE),
@@ -67,32 +61,32 @@ class SystemAnomaliesHeuristic(BaseHeuristic):
         re.compile(r'vold:.*(mount|umount).*failed for (\S+)', re.IGNORECASE),
     ]
 
-    # Timing and sequence anomalies (realistic patterns)
+    # Timing and sequence anomalies
     TIMING_ANOMALY_PATTERNS = [
         re.compile(r'Watchdog.*timeout.*system_server.*(\d+).*seconds', re.IGNORECASE),
         re.compile(r'init.*service.*restarting.*too.*frequently', re.IGNORECASE),
         re.compile(r'Zygote.*died.*unexpectedly.*restarting', re.IGNORECASE),
     ]
 
-    # Process behavior anomalies (realistic patterns)
+    # Process behavior anomalies
     PROCESS_ANOMALY_PATTERNS = [
         re.compile(r'ActivityManager.*Killing.*\d+.*processes.*due.*to.*system.*pressure', re.IGNORECASE),
         re.compile(r'Process.*\d+.*died.*due.*to.*signal.*(\d+).*unexpectedly', re.IGNORECASE),
     ]
 
-    # System state anomalies (realistic patterns)
+    # System state anomalies 
     SYSTEM_STATE_ANOMALY_PATTERNS = [
         re.compile(r'SystemServer.*entered.*safe.*mode', re.IGNORECASE),
         re.compile(r'ActivityManager.*System.*not.*ready.*after.*(\d+).*seconds', re.IGNORECASE),
     ]
 
-    # Communication anomalies (realistic IPC patterns)
+    # Communication anomalies
     COMMUNICATION_ANOMALY_PATTERNS = [
         re.compile(r'ActivityManager.*Broadcast.*timeout.*(\d+).*receivers', re.IGNORECASE),
         re.compile(r'ServiceManager.*Service.*\w+.*died.*(\d+).*times', re.IGNORECASE),
     ]
 
-    # Hardware interaction anomalies (realistic hardware patterns)
+    # Hardware interaction anomalies
     HARDWARE_ANOMALY_PATTERNS = [
         re.compile(r'SensorManager.*Sensor.*\w+.*stopped.*responding', re.IGNORECASE),
         re.compile(r'AudioManager.*Audio.*device.*disconnected.*unexpectedly', re.IGNORECASE),
@@ -107,7 +101,7 @@ class SystemAnomaliesHeuristic(BaseHeuristic):
         'ro.boot.mode', 'ro.boot.selinux', 'ro.boot.flash.locked'
     }
 
-    # Critical system daemons (updated for modern Android)
+    # Critical system daemons
     CRITICAL_DAEMONS = {
         'installd', 'vold', 'netd', 'keystore2', 'audioserver', 'cameraserver',
         'mediaserver', 'media.extractor', 'media.codec', 'drmserver'
@@ -178,7 +172,7 @@ class SystemAnomaliesHeuristic(BaseHeuristic):
                         # Check if this is a critical property change
                         is_critical = any(prop in property_name for prop in self.CRITICAL_PROPERTIES)
                         
-                        if is_critical or 'resetprop' in line:  # Magisk property modification
+                        if is_critical or 'resetprop' in line:  # Magisk'like property modification
                             severity = Severity.CRITICAL if is_critical else Severity.HIGH
                             confidence = 0.9 if is_critical else 0.7
                             

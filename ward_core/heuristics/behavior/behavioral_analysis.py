@@ -1,7 +1,7 @@
 """
 Behavioral Analysis Heuristic
 
-Uses shared services for correlation and reduced false positives.
+Focusing on wakelock and foreground behavior.
 """
 
 import re
@@ -13,12 +13,12 @@ from ward_core.heuristics.base import BaseHeuristic
 from ward_core.heuristics.context.installation_context import InstallationContextHeuristic
 from ward_core.logic.models import Detection, Evidence, EvidenceType, Severity, LogData
 
-# JobScheduler thresholds - based on realistic Android patterns
+# JobScheduler thresholds
 MAX_JOBS_PER_APP = 15
 SUSPICIOUS_JOB_TYPES = {"sync", "upload", "report", "collect", "monitor", "track", "log"}
 
-# These patterns match real wakelock names found in Android batterystats
-REALISTIC_WAKELOCK_PATTERNS = {
+# These patterns match wakelock names found in Android batterystats
+WAKELOCK_PATTERNS = {
     "audio_wakelocks": re.compile(r'AudioMix', re.IGNORECASE),
     "power_manager_wakelocks": re.compile(r'PowerManagerService\.WakeLocks', re.IGNORECASE),
     "alarm_manager_wakelocks": re.compile(r'AlarmManager', re.IGNORECASE),
@@ -43,10 +43,6 @@ SPYWARE_THRESHOLDS = {
     # Total consumption thresholds (total_time_ms, count, time_window_hours)
     'excessive_total_time': (3_600_000, 50, 4),    # 60+ minutes total, 50+ instances in 4h
     'persistent_background': (1_800_000, 100, 2),  # 30+ minutes total, 100+ instances in 2h (aggressive polling)
-
-    # Risk adjustment is now handled by installation_context heuristic
-    # Sideloaded apps with suspicious behavior get higher risk scores
-    # Play Store apps get baseline risk scores
 }
 
 # Fingerprinting permissions
@@ -152,16 +148,15 @@ class BehavioralAnalysisHeuristic(BaseHeuristic):
         Returns:
             List of Detection objects with proper correlation
         """
-        # Analyze different behavioral patterns using realistic ADB log patterns
+        # Analyze different behavioral patterns using ADB log patterns
         job_detections = self._analyze_jobscheduler_abuse(log_data)
         wakelock_detections = self._analyze_wakelock_abuse(log_data)
         fingerprint_detections = self._analyze_fingerprinting_activity(log_data)
         usage_detections = self._analyze_usage_statistics(log_data)
 
-        # Enhanced behavioral analysis with realistic patterns
-        # Accessibility service analysis is handled by permissions heuristic to avoid duplication
-        notification_detections = self._analyze_notification_listener_abuse_realistic(log_data)
-        stealth_detections = self._analyze_stealth_behaviors_realistic(log_data)
+        # Enhanced behavioral analysis with patterns
+        notification_detections = self._analyze_notification_listener_abuse_(log_data)
+        stealth_detections = self._analyze_stealth_behaviors_(log_data)
 
         # Merged resource analysis features
         battery_detections = self._analyze_battery_drain(log_data)
@@ -171,10 +166,9 @@ class BehavioralAnalysisHeuristic(BaseHeuristic):
         location_detections = self._analyze_location_misuse(log_data)
         persistent_detections = self._analyze_persistent_services(log_data)
         blocked_detections = self._analyze_blocked_operations(log_data)
-        package_detections = self._analyze_package_characteristics(log_data)
-
+        package_detections = self._analyze_package_characteristics(log_data) 
+        
         # Combine all detections (includes AppOps behavioral analysis)
-        # Accessibility service analysis is handled by permissions heuristic
         all_detections = (job_detections + wakelock_detections + fingerprint_detections +
                          usage_detections + battery_detections + foreground_detections +
                          appops_behavior_detections + location_detections +
@@ -255,7 +249,7 @@ class BehavioralAnalysisHeuristic(BaseHeuristic):
 
         # Use the highest severity detection as base
         base_detection = detections[0]
-        count = len(detections)
+        count = len(detections)        # Accessibility service analysis is handled by permissions heuristic
 
         # Determine consolidated title and description
         if 'selinux_avc' in group_key:
@@ -335,7 +329,7 @@ class BehavioralAnalysisHeuristic(BaseHeuristic):
 
         except (ValueError, AttributeError):
             # Log warning for debugging but don't crash
-            # In production, you might want to use proper logging
+            # TODO:In production, we need to use proper logging!
             return 0.0
 
     def _safe_parse_numeric(self, value: str, default: float = 0.0) -> float:
@@ -346,8 +340,6 @@ class BehavioralAnalysisHeuristic(BaseHeuristic):
             return float(value)
         except (ValueError, TypeError):
             return default
-
-    # Accessibility service analysis moved to permissions heuristic to avoid duplication
 
     def _analyze_persistent_services(self, log_data: LogData) -> List[Detection]:
         """
@@ -906,22 +898,22 @@ class BehavioralAnalysisHeuristic(BaseHeuristic):
         return False
     
     def _analyze_jobscheduler_abuse(self, log_data: LogData) -> List[Detection]:
-        """Analyze JobScheduler and background service abuse using realistic Android patterns."""
+        """Analyze JobScheduler and background service abuse using Android patterns."""
         detections = []
         
         job_info = defaultdict(lambda: {'jobs': [], 'services': []})
         
-        # Parse job scheduler information from logs - realistic Android patterns
+        # Parse job scheduler information from logs - Android patterns
         for line in log_data.raw_lines:
             line = line.strip()
             
-            # Look for UID-based package identification (realistic Android pattern)
+            # Look for UID-based package identification
             uid_match = re.search(r'u(\d+):', line)
             if uid_match:
                 # Extract package from subsequent lines or context
                 continue
             
-            # Look for realistic job patterns from Android logs
+            # Look for job patterns from Android logs
             if "Job " in line and ":" in line:
                 # Pattern: "Job com.package.name/service.name: duration realtime (times), duration background (times)"
                 job_match = re.search(r'Job\s+([^:]+):\s+(\d+[sm]\s+\d+ms)\s+realtime\s+\((\d+)\s+times\)', line)
@@ -942,7 +934,7 @@ class BehavioralAnalysisHeuristic(BaseHeuristic):
                                 'line': line
                             })
             
-            # Look for realistic service patterns from Android logs
+            # Look for service patterns
             if "Service " in line and "Created for:" in line:
                 # Pattern: "Service com.package.service: Created for: duration uptime"
                 service_match = re.search(r'Service\s+([^:]+):\s+Created for:', line)
@@ -1011,11 +1003,11 @@ class BehavioralAnalysisHeuristic(BaseHeuristic):
         return detections
     
     def _analyze_wakelock_abuse(self, log_data: LogData) -> List[Detection]:
-        """Analyze wakelock abuse patterns using realistic Android log patterns."""
+        """Analyze wakelock abuse patterns using Android log patterns."""
         detections = []
         
-        # Parse wakelock information from logs - realistic Android patterns
-        package_wakelocks = self._parse_realistic_wakelock_data(log_data.raw_lines)
+        # Parse wakelock information from logs - Android patterns
+        package_wakelocks = self._parse__wakelock_data(log_data.raw_lines)
 
         # Analyze each package's wakelock patterns
         for package, wakelocks in package_wakelocks.items():
@@ -1028,15 +1020,15 @@ class BehavioralAnalysisHeuristic(BaseHeuristic):
             # total_count = sum(wl.get('count', 0) for wl in wakelocks) 
             # kernel_wakelocks = [wl for wl in wakelocks if wl.get('is_kernel', False)]  
             
-            # Categorize wakelocks by realistic pattern
+            # Categorize wakelocks by pattern
             categorized_wakelocks = defaultdict(list)
             for wl in wakelocks:
                 wakelock_name = wl.get('name', '').lower()
-                for pattern_name, pattern_regex in REALISTIC_WAKELOCK_PATTERNS.items():
+                for pattern_name, pattern_regex in WAKELOCK_PATTERNS.items():
                     if pattern_regex.search(wakelock_name):
                         categorized_wakelocks[pattern_name].append(wl)
             
-            # Apply spyware detection algorithms with realistic thresholds
+            # Apply spyware detection algorithms with thresholds
             package_detections = []
             
             # High-frequency background polling detection (app-category agnostic)
@@ -1093,12 +1085,12 @@ class BehavioralAnalysisHeuristic(BaseHeuristic):
         
         return detections
     
-    def _parse_realistic_wakelock_data(self, raw_lines: List[str]) -> Dict[str, List[Dict[str, Any]]]:
-        """Parse wakelock data from realistic Android log patterns."""
+    def _parse__wakelock_data(self, raw_lines: List[str]) -> Dict[str, List[Dict[str, Any]]]:
+        """Parse wakelock data from Android log patterns."""
         package_wakelocks = defaultdict(list)
         current_uid = None
         
-        # First pass: build UID to package mapping from realistic Android patterns
+        # First pass: build UID to package mapping from Android patterns
         for line in raw_lines:
             line = line.strip()
             
@@ -1115,7 +1107,7 @@ class BehavioralAnalysisHeuristic(BaseHeuristic):
                     # current_package = pkg_match.group(1)  # Not used currently
                     continue
         
-        # Second pass: parse wakelocks with realistic Android patterns
+        # Second pass: parse wakelocks with Android patterns
         current_uid = None
         for line in raw_lines:
             line = line.strip()
@@ -1126,7 +1118,7 @@ class BehavioralAnalysisHeuristic(BaseHeuristic):
                 current_uid = uid_match.group(1)
                 continue
             
-            # Look for realistic wakelock patterns
+            # Look for wakelock patterns
             if "Wake lock " in line:
                 # Pattern: "Wake lock *job*/package/service realtime"
                 wl_match = re.search(r'Wake lock\s+([^\s]+)', line)
@@ -1157,7 +1149,7 @@ class BehavioralAnalysisHeuristic(BaseHeuristic):
         return dict(package_wakelocks)
     
     def _analyze_fingerprinting_activity(self, log_data: LogData) -> List[Detection]:
-        """Analyze device fingerprinting activity using realistic Android patterns."""
+        """Analyze device fingerprinting activity using Android patterns."""
         detections = []
         
         package_permissions = defaultdict(set)
@@ -1168,11 +1160,11 @@ class BehavioralAnalysisHeuristic(BaseHeuristic):
             if permissions:
                 package_permissions[package_name].update(permissions)
         
-        # Also look for permission patterns in realistic Android logs
+        # Also look for permission patterns in Android logs
         for line in log_data.raw_lines:
             line = line.strip()
             
-            # Look for permission grants in realistic Android format
+            # Look for permission grants in Android format
             perm_match = re.search(r'Permission\s+([a-zA-Z0-9_.]+)\s+granted\s+to\s+([a-zA-Z0-9_.]+)', line)
             if perm_match:
                 permission = perm_match.group(1)
@@ -1334,17 +1326,18 @@ class BehavioralAnalysisHeuristic(BaseHeuristic):
         )
 
     def _analyze_foreground_mismatch(self, log_data: LogData) -> List[Detection]:
-        """Enhanced stealth behavior detection using realistic Android patterns."""
+        """Enhanced stealth behavior detection using Android patterns."""
         detections = []
         
         # Parse usage statistics for foreground/background analysis
-        usage_stats = self._parse_realistic_usage_statistics(log_data.raw_lines)
+        usage_stats = self._parse__usage_statistics(log_data.raw_lines)
         
         # Parse battery statistics for background CPU correlation
         battery_stats = self._parse_battery_statistics(log_data.raw_lines)
         
         # Parse AppOps for foreground service correlation
         # Note: AppOps format may vary between OEMs but this handles common patterns
+        # TODO: Verify
         appops_data = self._parse_appops_data(log_data.raw_lines)
         
         # Analyze stealth patterns for each package
@@ -1592,14 +1585,14 @@ class BehavioralAnalysisHeuristic(BaseHeuristic):
         return detections
 
     def _analyze_location_misuse(self, log_data: LogData) -> List[Detection]:
-        """Enhanced location tracking analysis with realistic Android patterns."""
+        """Enhanced location tracking analysis with Android patterns."""
         detections = []
         
         # Parse AppOps data for location usage (primary source)
         appops_data = self._parse_appops_data(log_data.raw_lines)
         
         # Get usage statistics for correlation
-        usage_stats = self._parse_realistic_usage_statistics(log_data.raw_lines)
+        usage_stats = self._parse__usage_statistics(log_data.raw_lines)
         
         # Analyze location patterns for each package
         for package, ops_data in appops_data.items():
@@ -1647,7 +1640,7 @@ class BehavioralAnalysisHeuristic(BaseHeuristic):
         
         return detections
     
-    def _parse_realistic_usage_statistics(self, raw_lines: List[str]) -> Dict[str, Dict[str, Any]]:
+    def _parse__usage_statistics(self, raw_lines: List[str]) -> Dict[str, Dict[str, Any]]:
         """Parse usage statistics for foreground/background analysis."""
         usage_stats = defaultdict(lambda: {
             'total_time_ms': 0, 'foreground_time_ms': 0, 'launch_count': 0
@@ -1656,13 +1649,13 @@ class BehavioralAnalysisHeuristic(BaseHeuristic):
         for line in raw_lines:
             line = line.strip()
             
-            # Parse realistic usage statistics format from Android logs
+            # Parse usage statistics format from Android logs
             # Pattern: "Total running: 2h 21m 22s 649ms"
             if "Total running:" in line:
                 # This would need context to associate with package
                 continue
             
-            # Parse realistic launch count patterns
+            # Parse launch count patterns
             if "starts" in line and "Proc " in line:
                 proc_match = re.search(r'Proc\s+([a-zA-Z0-9_.]+):', line)
                 if proc_match:
@@ -1687,8 +1680,10 @@ class BehavioralAnalysisHeuristic(BaseHeuristic):
         app_usage = usage_stats.get(package, {})
         user_interaction_time = app_usage.get('foreground_time', 0)
 
-        # System apps get different treatment (use zero-trust verification)
+        # System apps get different treatment
         # Note: Using basic system package check as fallback since log_data not available in this context
+        # Ideally we'd move waya from this
+        # TODO: Move to installation context heuristic
         if package == "android" or "com.android." in package.lower():
             # System apps can legitimately use location in background
             if bg_ratio > 0.9 and duration > 21600:  # 90%+ background for 6+ hours
@@ -1781,7 +1776,7 @@ class BehavioralAnalysisHeuristic(BaseHeuristic):
         return False
     
     def _get_stealth_evidence_lines(self, package: str, raw_lines: List[str]) -> List[str]:
-        """Get evidence lines for stealth behavior detection using realistic Android patterns."""
+        """Get evidence lines for stealth behavior detection using Android patterns."""
         evidence_lines = []
         for line in raw_lines:
             if package in line and any(keyword in line.lower() for keyword in 
@@ -1940,7 +1935,7 @@ class BehavioralAnalysisHeuristic(BaseHeuristic):
                 duration = op_data.get('duration_secs', 0) or 0  # Convert None to 0
                 bg_ratio = op_data.get('bg_ratio', 0) or 0  # Convert None to 0
                 
-                # Detect covert usage patterns with realistic thresholds
+                # Detect covert usage patterns with thresholds
                 if duration > 7200:  # 2+ hours - CRITICAL
                     covert_surveillance_score += 5
                     surveillance_evidence.append(f"{op}: {duration/3600:.1f}h ({bg_ratio*100:.0f}% background)")
@@ -1981,7 +1976,7 @@ class BehavioralAnalysisHeuristic(BaseHeuristic):
             fgsvc_ratio = op_data.get('fgsvc_ratio', 0) or 0  # Convert None to 0
             duration = op_data.get('duration_secs', 0) or 0  # Convert None to 0
             
-            # Detect excessive FGS usage with realistic thresholds
+            # Detect excessive FGS usage with thresholds
             if duration > 14400:  # 4+ hours - CRITICAL
                 foreground_abuse_score += 5
                 fgs_evidence.append(f"START_FOREGROUND: {duration/3600:.1f}h FGS")
@@ -2598,8 +2593,8 @@ class BehavioralAnalysisHeuristic(BaseHeuristic):
 
     # Accessibility service analysis moved to permissions heuristic to avoid duplication
 
-    def _analyze_notification_listener_abuse_realistic(self, log_data: LogData) -> List[Detection]:
-        """Analyze notification listener abuse using realistic ADB log patterns."""
+    def _analyze_notification_listener_abuse_(self, log_data: LogData) -> List[Detection]:
+        """Analyze notification listener abuse using ADB log patterns."""
         detections = []
 
         # Look for actual notification listener patterns in Android logs
@@ -2670,11 +2665,11 @@ class BehavioralAnalysisHeuristic(BaseHeuristic):
 
         return uid_to_package
 
-    def _analyze_stealth_behaviors_realistic(self, log_data: LogData) -> List[Detection]:
-        """Analyze stealth behaviors using realistic ADB log patterns."""
+    def _analyze_stealth_behaviors_(self, log_data: LogData) -> List[Detection]:
+        """Analyze stealth behaviors using ADB log patterns."""
         detections = []
 
-        # Look for realistic stealth behavior patterns in Android logs
+        # Look for stealth behavior patterns in Android logs
         # Based on actual AppOps and ActivityManager log patterns
         stealth_patterns = [
             # AppOps patterns for background sensor access

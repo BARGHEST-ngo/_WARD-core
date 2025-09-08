@@ -1,5 +1,7 @@
 """
 User Analysis Heuristic
+#TODO:Document this properly
+#TODO:Consider whitelisting or verifying work profile-- research possibilities of workprofile sandboxes becoming a target
 """
 
 import re
@@ -11,9 +13,11 @@ from ward_core.logic.models import Detection, Evidence, EvidenceType, Severity, 
 
 
 class UserAnalysisHeuristic(BaseHeuristic):
-    """Detects hidden users and shared user violations."""
+    """Detects hidden users and shared user violations.
+    #TODO:Document this properly
+    """
     
-    # User patterns from realistic ADB output (based on actual dumpsys package output)
+    # User patterns fromt ADB output (based on actual dumpsys package output)
     USER_PATTERNS = {
         'dumpsys_user': re.compile(r'User\s+(\d+):\s+.*?hidden=([^\s]+)', re.IGNORECASE),
         'pm_user': re.compile(r'UserInfo\{(\d+):([^:]+):([^\}]+)\}', re.IGNORECASE),
@@ -75,7 +79,7 @@ class UserAnalysisHeuristic(BaseHeuristic):
         detections = []
         hidden_users = set()  # Use set to track unique hidden users
 
-        # Look for user information in raw lines (realistic approach)
+        # Look for user information in raw lines
         for line in log_data.raw_lines:
             line = line.strip()
             if not line:
